@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Configuración básica del documento -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Título de la página -->
+  <title>RE/MAX Property Explorer</title>
+
+  <!-- Fuente de Google (tipografía principal) -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos principales del sitio -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- NAVBAR (Barra de navegación superior) -->
+<nav class="navbar">
+  <div class="nav-container">
+
+    <!-- Logo de RE/MAX (redirige al inicio) -->
+    <a href="index.html" class="nav-logo" onclick="window.location.href='index.html'">
+  <span class="logo-remax">
+    <img src="img/Remaxlogoblanco.png" class="logo-img">
+  </span>
+</a>
+
+    <!-- Menú de navegación -->
+    <ul class="nav-menu">
+
+      <!-- Dropdown: opciones de compra -->
+      <li class="menu-item">
+        <span>Quiero comprar ▾</span>
+        <div class="dropdown">
+          <p>Simulador hipotecario</p>
+          <p>FOVISSSTE</p>
+          <p>INFONAVIT</p>
+        </div>
+      </li>
+
+      <!-- Dropdown: documentos legales -->
+      <li class="menu-item">
+        <span>Aviso de privacidad ▾</span>
+        <div class="dropdown">
+          <p>Contrato NOM 247</p>
+          <p>Código de ética</p>
+        </div>
+      </li>
+
+      <!-- Enlaces simples -->
+      <li class="menu-item">Agentes Victoriosos</li>
+      <li class="menu-item">Contacto</li>
+    </ul>
+
+
+
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-overlay">
+    <div class="hero-content">
+
+      <!-- Mensaje principal -->
+      <h2>¿Deseas comprar casa con algún tipo de crédito?</h2>
+
+      <!-- Botones que cargan propiedades -->
+      <div class="hero-buttons">
+        <button onclick="fetchAllProperties()">Crédito Bancario</button>
+        <button onclick="fetchAllProperties()">FOVISSSTE</button>
+        <button onclick="fetchAllProperties()">INFONAVIT</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="container">
+
+  <!-- Título de sección -->
+  <h2 class="section-title">Propiedades recientes</h2>
+
+  <!-- FILTROS DE BÚSQUEDA -->
+  <div class="filter-bar">
+
+    <!-- Filtro por ubicación -->
+    <div class="filter-item">
+      <label>Ubicación</label>
+      <input type="text" id="searchLocation">
+    </div>
+
+    <!-- Filtro por precio -->
+    <div class="filter-item">
+      <label>Precio</label>
+      <select id="priceRange">
+        <option value="">Todos</option>
+        <option value="1">Hasta $1M</option>
+        <option value="2">Hasta $3M</option>
+        <option value="3">Más de $3M</option>
+      </select>
+    </div>
+
+    <!-- Filtro por tipo de propiedad -->
+    <div class="filter-item">
+      <label>Tipo</label>
+      <select id="category">
+        <option value="">Todos</option>
+        <option value="casa">Casa</option>
+        <option value="departamento">Departamento</option>
+        <option value="terreno">Terreno</option>
+      </select>
+    </div>
+
+    <!-- Botón para aplicar filtros -->
+    <button class="filter-btn-search" onclick="applyFilters()">
+      <img src="img/lupa1.png" class="search-icon">
+    </button>
+
+  </div>
+  <div id="results" class="property-grid"></div>
+
+</div>
+
+<!-- SCRIPT PRINCIPAL -->
+<script src="app.js"></script>
+
+</body>
+<!-- ===================================================== -->
+<!-- TESTIMONIOS (CARRUSEL CSS INFINITO) -->
+<!-- ===================================================== -->
+<section class="testimonios">
+  <h2 class="section-title">Opiniones de clientes</h2>
+
+  <div class="carousel">
+
+    <!-- GRUPO ORIGINAL -->
+    <div class="group">
+
+      <div class="card">
+        <strong>Carlos M.</strong><br>
+        ⭐⭐⭐⭐⭐<br>
+        Excelente atención y muy buen servicio.
+      </div>
+
+      <div class="card">
+        <strong>María G.</strong><br>
+        ⭐⭐⭐⭐<br>
+        Muy buena experiencia, todo fue claro.
+      </div>
+
+      <div class="card">
+        <strong>Luis R.</strong><br>
+        ⭐⭐⭐⭐⭐<br>
+        Recomendado al 100%.
+      </div>
+
+    </div>
+
+    <!-- GRUPO DUPLICADO (para loop infinito) -->
+    <div class="group" aria-hidden="true">
+
+      <div class="card">
+        <strong>Carlos M.</strong><br>
+        ⭐⭐⭐⭐⭐<br>
+        Excelente atención y muy buen servicio.
+      </div>
+
+      <div class="card">
+        <strong>María G.</strong><br>
+        ⭐⭐⭐⭐<br>
+        Muy buena experiencia, todo fue claro.
+      </div>
+
+      <div class="card">
+        <strong>Luis R.</strong><br>
+        ⭐⭐⭐⭐⭐<br>
+        Recomendado al 100%.
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<!-- FOOTER (Pie de página) -->
+
+<footer class="footer">
+  <div class="footer-container">
+
+    <!-- Logo + nombre -->
+    <div class="footer-logo">
+      <img src="img/Remaxlogoblanco.png" class="footer-logo-img">
+    </div>
+
+    <!-- Menú del footer -->
+    <ul class="footer-menu">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="index.html">Propiedades</a></li>
+      <li><a href="#">Nosotros</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+
+    <!-- Icono menú  -->
+    <div class="footer-icon">
+      ☰
+    </div>
+
+  </div>
+
+  <!-- Línea separadora -->
+  <hr class="footer-line">
+
+  <!-- Derechos -->
+  <p class="footer-copy">
+    Remax Victoria. Todos los derechos reservados ©
+  </p>
+</footer>
+</html>
