@@ -3,16 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detalle de Propiedad ” RE/MAX Victoria</title>
-
+<title>Detalle de Propiedad - RE/MAX Victoria</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="property-detail.css">
+<style>
+/* ===== CARRUSEL LIGHTBOX ===== */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 99999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox.active { display: flex; }
+
+.lightbox-img-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 960px;
+  padding: 0 60px;
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 10px;
+  object-fit: contain;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.lightbox-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.lightbox-btn:hover { background: rgba(255,255,255,0.3); }
+.lightbox-btn.prev { left: 8px; }
+.lightbox-btn.next { right: 8px; }
+
+.lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.lightbox-counter {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  margin-top: 12px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.lightbox-thumbnails {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  max-width: 960px;
+  overflow-x: auto;
+  padding: 4px 16px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.3) transparent;
+}
+
+.lightbox-thumbnails img {
+  width: 72px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.55;
+  border: 2px solid transparent;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.lightbox-thumbnails img.active,
+.lightbox-thumbnails img:hover {
+  opacity: 1;
+  border-color: #E11B22;
+}
+
+/* Hacer clickeables las imágenes de la galería */
+.gallery-main img,
+.gallery-thumb img {
+  cursor: pointer;
+}
+.gallery-overlay {
+  cursor: pointer;
+}
+</style>
 </head>
 
 <body class="property-page">
 
-<!--  NAVBAR  -->
+<!-- NAVBAR (igual que index) -->
 <nav class="navbar">
   <div class="nav-container">
     <a href="index.html" class="nav-logo">
@@ -28,451 +136,484 @@
         </div>
       </li>
       <li class="menu-item">
-        <a href="#contacto" style="color:inherit;text-decoration:none;">Contacto</a>
+        <a href="index.html#contacto" style="color:inherit;text-decoration:none;">Contacto</a>
       </li>
     </ul>
   </div>
 </nav>
 
-<!--BREADCRUMB  -->
-<div class="breadcrumb" id="breadcrumb">
-    <a href="index.html">Propiedades</a>
-    <span id="bc-title">Cargando...</span>
+<!-- LIGHTBOX CARRUSEL -->
+<div class="lightbox" id="lightbox" onclick="lightboxClickOutside(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+
+  <div class="lightbox-img-wrap">
+    <button class="lightbox-btn prev" onclick="lightboxPrev()">&#8249;</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="Foto propiedad">
+    <button class="lightbox-btn next" onclick="lightboxNext()">&#8250;</button>
+  </div>
+
+  <div class="lightbox-counter" id="lightbox-counter">1 / 1</div>
+
+  <div class="lightbox-thumbnails" id="lightbox-thumbs"></div>
 </div>
 
-<!--  MAIN CONTAINER  -->
+<!-- BREADCRUMB -->
+<div class="breadcrumb" id="breadcrumb">
+  <a href="index.html">Propiedades</a>
+  <span id="bc-title">Cargando...</span>
+</div>
+
+<!-- MAIN CONTAINER -->
 <div class="container">
 
-    <!-- Loading state -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="spinner"></div>
-        <p>Cargando propiedad...</p>
+  <div id="loading-screen" class="loading-screen">
+    <div class="spinner"></div>
+    <p>Cargando propiedad...</p>
+  </div>
+
+  <div id="error-screen" class="error-msg" style="display:none;">
+    No se pudo cargar la propiedad. Verifica que la API esté disponible.
+  </div>
+
+  <div id="detail-content" style="display:none;">
+
+    <!-- Header -->
+    <div class="property-header">
+      <div class="property-badge" id="prop-badge">RE/MAX</div>
+      <h1 class="property-title" id="prop-title">Propiedad</h1>
+      <div class="property-meta" id="prop-meta"></div>
+      <div class="property-price-row">
+        <span class="property-price" id="prop-price">—</span>
+        <span class="price-label">MXN</span>
+      </div>
     </div>
 
-    <!-- Error state -->
-    <div id="error-screen" class="error-msg" style="display:none;">
-        No se pudo cargar la propiedad. Verifica que la API este disponible.
+    <!-- Galería -->
+    <div class="gallery-wrap">
+      <div class="gallery-grid" id="gallery-grid"></div>
     </div>
 
-    <!-- Main content (hidden until loaded) -->
-    <div id="detail-content" style="display:none;">
+    <!-- Características -->
+    <div class="details-section" id="section-features" style="display:none;">
+      <h3>
+        <span class="icon"><img src="img/caracteristicas.png" class="logo-img" alt="Características"></span>
+        Características
+      </h3>
+      <div class="features-grid" id="features-grid"></div>
+    </div>
 
-        <!-- Property header -->
-        <div class="property-header">
-            <div class="property-badge" id="prop-badge">RE/MAX</div>
-            <h1 class="property-title" id="prop-title">Propiedad</h1>
-            <div class="property-meta" id="prop-meta"></div>
-            <div class="property-price-row">
-                <span class="property-price" id="prop-price">—</span>
-                <span class="price-label">MXN</span>
-            </div>
+    <!-- Descripción -->
+    <div class="details-section" id="section-desc" style="display:none;">
+      <h3>
+        <span class="icon"><img src="img/Descripcion.png" class="logo-img" alt="Descripción"></span>
+        Descripción
+      </h3>
+      <p class="desc-text" id="prop-desc"></p>
+    </div>
+
+    <!-- Equipamiento -->
+    <div class="details-section" id="section-bullets" style="display:none;">
+      <h3>
+        <span class="icon"><img src="img/equipamiento.png" class="logo-img" alt="Equipamiento"></span>
+        Equipamiento
+      </h3>
+      <ul class="bullets-list" id="bullets-list"></ul>
+    </div>
+
+    <!-- Mapa + Agente -->
+    <div class="location-agent-row">
+
+      <div class="map-box">
+        <div class="map-box-header">
+          <h3>
+            <svg class="remax-pin" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 18 12 18s12-9 12-18c0-6.627-5.373-12-12-12z" fill="#E11B22"/>
+              <text x="12" y="15" text-anchor="middle" fill="white" font-size="7" font-family="Poppins,sans-serif" font-weight="700" dominant-baseline="middle">R</text>
+            </svg>
+            Ubicación
+          </h3>
         </div>
+        <iframe id="map-frame" class="map-frame" referrerpolicy="no-referrer-when-downgrade" allowfullscreen loading="lazy"></iframe>
+        <div class="map-address"><span id="map-address-text"></span></div>
+        <a id="btn-maps" class="btn-maps" target="_blank" rel="noopener noreferrer">Ver en Google Maps</a>
+      </div>
 
-        <!-- Gallery -->
-        <div class="gallery-wrap">
-            <div class="gallery-grid" id="gallery-grid">
-                <!-- Populated by JS -->
-            </div>
+      <div class="agent-card">
+        <div id="agent-photo-wrap">
+          <div class="agent-card-photo-placeholder" id="agent-initials">—</div>
         </div>
-
-        <!-- Features -->
-        <div class="details-section" id="section-features" style="display:none;">
-            <h3><span class="icon"><img src="img/caracteristicas.png" class="logo-img" alt="Características"></span> Caracteri­sticas</h3>
-            <div class="features-grid" id="features-grid"></div>
+        <div class="agent-card-body">
+          <div class="agent-name" id="agent-name"></div>
+          <div class="agent-title">Agente RE/MAX Victoria</div>
+          <div class="agent-contacts" id="agent-contacts"></div>
+          <button class="btn-contact" id="btn-contact">Contactar</button>
+          <button class="btn-contact-outline">Agendar visita</button>
         </div>
+      </div>
 
-        <!-- Description -->
-        <div class="details-section" id="section-desc" style="display:none;">
-            <h3><span class="icon"><img src="img/Descripcion.png" class="logo-img" alt="Descripción"></span> Descripción</h3>
-            <p class="desc-text" id="prop-desc"></p>
-        </div>
+    </div>
 
-        <!-- Bullet points / highlights -->
-        <div class="details-section" id="section-bullets" style="display:none;">
-            <h3><span class="icon"><img src="img/equipamiento.png" class="logo-img" alt="Equipamiento"></span> Equipamiento</h3>
-            <ul class="bullets-list" id="bullets-list"></ul>
-        </div>
+  </div>
+</div>
 
-        <!-- MAP + AGENT -->
-        <div class="location-agent-row">
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-logo">
+      <img src="img/Remaxlogoblanco.png" class="footer-logo-img">
+    </div>
+    <ul class="footer-menu">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="index.html">Propiedades</a></li>
+      <li><a href="index.html#contacto">Contacto</a></li>
+    </ul>
+    <div class="footer-icon">☰</div>
+  </div>
+  <hr class="footer-line">
+  <p class="footer-copy">Remax Victoria. Todos los derechos reservados ©</p>
+</footer>
 
-            <!-- MAP -->
-            <div class="map-box">
-                <div class="map-box-header">
-                    <h3>
-                        <!-- Inline RE/MAX balloon icon -->
-                        <svg class="remax-pin" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 18 12 18s12-9 12-18c0-6.627-5.373-12-12-12z" fill="#E11B22"/>
-                            <text x="12" y="15" text-anchor="middle" fill="white" font-size="7" font-family="Poppins,sans-serif" font-weight="700" dominant-baseline="middle">R</text>
-                        </svg>
-                        Ubicación
-                    </h3>
-                </div>
-
-                <!-- Google Maps embed (lat/lng replaced dynamically) -->
-                <iframe
-                    id="map-frame"
-                    class="map-frame"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    allowfullscreen
-                    loading="lazy">
-                </iframe>
-
-                <div class="map-address">
-                    <span id="map-address-text"></span>
-                </div>
-
-                <a id="btn-maps" class="btn-maps" target="_blank" rel="noopener noreferrer">
-                     Ver en Google Maps
-                </a>
-            </div>
-
-            <!-- AGENT CARD -->
-            <div class="agent-card">
-                <!-- Photo or initials placeholder -->
-                <div id="agent-photo-wrap">
-                    <div class="agent-card-photo-placeholder" id="agent-initials">â€”</div>
-                </div>
-
-                <div class="agent-card-body">
-                    <div class="agent-name" id="agent-name"></div>
-                    <div class="agent-title">Agente RE/MAX Victoria</div>
-
-                    <div class="agent-contacts" id="agent-contacts">
-                        <!-- Populated by JS -->
-                    </div>
-
-                    <button class="btn-contact" id="btn-contact">Contactar</button>
-                    <button class="btn-contact-outline">Agendar visita</button>
-                </div>
-            </div>
-
-        </div><!-- /location-agent-row -->
-
-    </div><!-- /detail-content -->
-
-</div><!-- /container -->
-
-<!--  SCRIPT -->
 <script>
-/* ============================================================
-   RE/MAX Victoria - Property Detail JS
-   Conectado al proxy local: /api/propiedad/:id
-   ============================================================ */
-
 const API_BASE = '/api';
 
-const MOCK_PROPERTY = {
-    id: 1,
-    titulo: 'Propiedad RE/MAX',
-    tipo: 'Propiedad',
-    estado: 'Disponible',
-    precio: 0,
-    moneda: 'MXN',
-    ubicacion: 'Durango, Dgo',
-    ciudad: 'Durango, Dgo',
-    lat: 24.0277,
-    lng: -104.6532,
-    descripcion: '',
-    destacados: [],
-    recamaras: null,
-    banos: null,
-    m2: null,
-    imagenes: [],
-    agente: {
-        nombre: 'Agente RE/MAX',
-        telefono: '',
-        email: '',
-        foto: '',
-        agente_id: null
-    }
-};
+/* ===== LIGHTBOX ===== */
+let lbImages = [];
+let lbIndex  = 0;
 
+function openLightbox(images, startIndex) {
+  lbImages = images;
+  lbIndex  = startIndex || 0;
+  renderLightbox();
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function lightboxClickOutside(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+function renderLightbox() {
+  const img     = document.getElementById('lightbox-img');
+  const counter = document.getElementById('lightbox-counter');
+  const thumbs  = document.getElementById('lightbox-thumbs');
+
+  img.src = lbImages[lbIndex];
+  counter.textContent = `${lbIndex + 1} / ${lbImages.length}`;
+
+  thumbs.innerHTML = lbImages.map((src, i) => `
+    <img src="${src}" class="${i === lbIndex ? 'active' : ''}"
+         onclick="lbGoTo(${i})" alt="Foto ${i+1}"
+         onerror="this.style.display='none'">
+  `).join('');
+
+  // Scroll thumbnail activo al centro
+  const activeTh = thumbs.querySelectorAll('img')[lbIndex];
+  if (activeTh) activeTh.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+}
+
+function lbGoTo(i) {
+  lbIndex = i;
+  renderLightbox();
+}
+
+function lightboxNext() {
+  lbIndex = (lbIndex + 1) % lbImages.length;
+  renderLightbox();
+}
+
+function lightboxPrev() {
+  lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
+  renderLightbox();
+}
+
+// Teclado: flechas y ESC
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('active')) return;
+  if (e.key === 'ArrowRight') lightboxNext();
+  if (e.key === 'ArrowLeft')  lightboxPrev();
+  if (e.key === 'Escape')     closeLightbox();
+});
+
+/* ===== NAVBAR SCROLL ===== */
+window.addEventListener('scroll', () => {
+  document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+/* ===== HELPERS ===== */
 function getQueryParam(key) {
-    return new URLSearchParams(window.location.search).get(key);
+  return new URLSearchParams(window.location.search).get(key);
 }
 
 function formatPrice(price, currency = 'MXN') {
-    const value = Number(price || 0);
-    if (!value) return 'Precio no disponible';
-    return new Intl.NumberFormat('es-MX', {
-        style: 'currency',
-        currency,
-        minimumFractionDigits: 0
-    }).format(value);
+  const value = Number(price || 0);
+  if (!value) return 'Precio no disponible';
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency, minimumFractionDigits: 0 }).format(value);
 }
 
 function initials(name) {
-    if (!name) return '?';
-    return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  if (!name) return '?';
+  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
 }
 
 function operationLabel(op) {
-    if (String(op) === '1') return 'En venta';
-    if (String(op) === '2') return 'En renta';
-    return 'Disponible';
+  if (String(op) === '1') return 'En venta';
+  if (String(op) === '2') return 'En renta';
+  return 'Disponible';
 }
 
 function buildPropertyTitle(p) {
-    if (p.titulo) return p.titulo;
-    const tipo = p.tipo_nombre || 'Propiedad';
-    const op = operationLabel(p.operacion).toLowerCase();
-    const zona = p.colonia_nombre || p.ciudad_nombre || 'Durango';
-    return `${tipo} ${op} en ${zona}`;
+  if (p.titulo) return p.titulo;
+  const tipo = p.tipo_nombre || 'Propiedad';
+  const op   = operationLabel(p.operacion).toLowerCase();
+  const zona = p.colonia_nombre || p.ciudad_nombre || 'Durango';
+  return `${tipo} ${op} en ${zona}`;
 }
 
+/* ===== MAP DATA ===== */
 function mapFromFlyerResponse(json, fallbackId) {
-    const root = json?.data || {};
-    const p = root?.propiedad || {};
-    const a = root?.agente || {};
+  const root = json?.data || {};
+  const p    = root?.propiedad || {};
+  const a    = root?.agente   || {};
 
-    const images = Array.isArray(p.imagenes)
-        ? p.imagenes
-            .map(img => img?.path ? `https://cdn.remax.com.mx/${img.path}` : '')
-            .filter(Boolean)
-        : [];
+  const images = Array.isArray(p.imagenes)
+    ? p.imagenes.map(img => img?.path ? `https://cdn.remax.com.mx/${img.path}` : '').filter(Boolean)
+    : [];
 
-    const nombreAgente = `${a.nombre || ''} ${a.apellido || ''}`.trim() || 'Agente RE/MAX';
-    const agenteFoto = a.imagen ? `https://cdn.remax.com.mx/agentes/${a.imagen}` : '';
-    const telefono = '618 811 1114'; p.whatsapp || '';
-    const currency = p.moneda || 'MXN';
-    const price = currency === 'USD' ? (p.usd_corriente || 0) : (p.mxn_corriente || 0);
+  const nombreAgente = `${a.nombre || ''} ${a.apellido || ''}`.trim() || 'Agente RE/MAX';
+  const agenteFoto   = a.imagen ? `https://cdn.remax.com.mx/agentes/${a.imagen}` : '';
+  const telefono     = '618 811 1114';
+  const currency     = p.moneda || 'MXN';
+  const price        = currency === 'USD' ? (p.usd_corriente || 0) : (p.mxn_corriente || 0);
 
-    const highlights = [];
-    if (p.clave) highlights.push(`Clave: ${p.clave}`);
-    if (p.tipo_nombre) highlights.push(`Tipo: ${p.tipo_nombre}`);
-    if (p.operacion) highlights.push(`Operación: ${operationLabel(p.operacion)}`);
-    if (p.m2_terreno) highlights.push(`Terreno: ${p.m2_terreno} m²`);
-    if (p.m2_construccion) highlights.push(`Construcción: ${p.m2_construccion} m²`);
-    if (p.numero_estacionamientos) highlights.push(`Estacionamientos: ${p.numero_estacionamientos}`);
+  const highlights = [];
+  if (p.clave)                   highlights.push(`Clave: ${p.clave}`);
+  if (p.tipo_nombre)             highlights.push(`Tipo: ${p.tipo_nombre}`);
+  if (p.operacion)               highlights.push(`Operación: ${operationLabel(p.operacion)}`);
+  if (p.m2_terreno)              highlights.push(`Terreno: ${p.m2_terreno} m²`);
+  if (p.m2_construccion)         highlights.push(`Construcción: ${p.m2_construccion} m²`);
+  if (p.numero_estacionamientos) highlights.push(`Estacionamientos: ${p.numero_estacionamientos}`);
 
-    return {
-        id: p.propiedad_id || fallbackId || 1,
-        titulo: buildPropertyTitle(p),
-        tipo: p.tipo_nombre || 'Propiedad',
-        estado: operationLabel(p.operacion),
-        precio: Number(price || 0),
-        moneda: currency,
-        ubicacion: [p.colonia_nombre, p.ciudad_nombre, p.estado_nombre].filter(Boolean).join(', '),
-        ciudad: [p.ciudad_nombre, p.estado_nombre].filter(Boolean).join(', '),
-        lat: Number(p.latitud) || 24.0277,
-        lng: Number(p.longitud) || -104.6532,
-        descripcion: p.descripcion || p.notas || '',
-        destacados: highlights,
-        recamaras: p.cuartos || null,
-        banos: p.banos || null,
-        m2: p.m2_construccion || p.m2_terreno || null,
-        imagenes: images,
-        agente: {
-            nombre: nombreAgente,
-            telefono: telefono,
-            email: a.email || '',
-            foto: agenteFoto,
-            agente_id: a.agente_id || null
-        }
-    };
+  return {
+    id:          p.propiedad_id || fallbackId || 1,
+    titulo:      buildPropertyTitle(p),
+    tipo:        p.tipo_nombre || 'Propiedad',
+    estado:      operationLabel(p.operacion),
+    precio:      Number(price || 0),
+    moneda:      currency,
+    ubicacion:   [p.colonia_nombre, p.ciudad_nombre, p.estado_nombre].filter(Boolean).join(', '),
+    ciudad:      [p.ciudad_nombre, p.estado_nombre].filter(Boolean).join(', '),
+    lat:         Number(p.latitud)  || 24.0277,
+    lng:         Number(p.longitud) || -104.6532,
+    descripcion: p.descripcion || p.notas || '',
+    destacados:  highlights,
+    recamaras:   p.cuartos || null,
+    banos:       p.banos   || null,
+    m2:          p.m2_construccion || p.m2_terreno || null,
+    imagenes:    images,
+    agente: {
+      nombre:    nombreAgente,
+      telefono:  telefono,
+      email:     a.email || '',
+      foto:      agenteFoto,
+      agente_id: a.agente_id || null
+    }
+  };
 }
 
 function mapFromLocalStorage(id) {
-    try {
-        const selected = JSON.parse(localStorage.getItem('selectedProperty') || 'null');
-        if (!selected) return { ...MOCK_PROPERTY, id: id || 1 };
-
-        return {
-            ...MOCK_PROPERTY,
-            id: selected.id || selected.propiedad_id || id || 1,
-            titulo: selected.titulo || MOCK_PROPERTY.titulo,
-            tipo: selected.tipo || MOCK_PROPERTY.tipo,
-            precio: Number(selected.precio || 0),
-            ubicacion: selected.ubicacion || MOCK_PROPERTY.ubicacion,
-            imagenes: selected.imagen ? [selected.imagen] : [],
-            agente: { ...MOCK_PROPERTY.agente }
-        };
-    } catch {
-        return { ...MOCK_PROPERTY, id: id || 1 };
-    }
+  try {
+    const selected = JSON.parse(localStorage.getItem('selectedProperty') || 'null');
+    if (!selected) return null;
+    return {
+      id:          selected.id || selected.propiedad_id || id || 1,
+      titulo:      selected.titulo  || 'Propiedad RE/MAX',
+      tipo:        selected.tipo    || 'Propiedad',
+      estado:      'Disponible',
+      precio:      Number(selected.precio || 0),
+      moneda:      'MXN',
+      ubicacion:   selected.ubicacion || 'Durango, Dgo',
+      ciudad:      selected.ubicacion || 'Durango, Dgo',
+      lat:         24.0277,
+      lng:         -104.6532,
+      descripcion: '',
+      destacados:  [],
+      recamaras:   null,
+      banos:       null,
+      m2:          null,
+      imagenes:    selected.imagen ? [selected.imagen] : [],
+      agente:      { nombre: 'Agente RE/MAX', telefono: '618 811 1114', email: '', foto: '', agente_id: null }
+    };
+  } catch { return null; }
 }
 
 async function fetchProperty(id) {
-    if (!id) return mapFromLocalStorage(id);
-
+  if (id) {
     try {
-        const res = await fetch(`${API_BASE}/propiedad/${id}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (!json?.data?.propiedad) throw new Error('Respuesta sin propiedad');
-        return mapFromFlyerResponse(json, id);
+      const res = await fetch(`${API_BASE}/propiedad/${id}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (!json?.data?.propiedad) throw new Error('Sin datos');
+      return mapFromFlyerResponse(json, id);
     } catch (err) {
-        console.warn('API no disponible, usando fallback:', err.message);
-        return mapFromLocalStorage(id);
+      console.warn('API no disponible, usando localStorage:', err.message);
     }
+  }
+  return mapFromLocalStorage(id);
 }
 
+/* ===== RENDER ===== */
 function render(prop) {
-    document.getElementById('bc-title').textContent = prop.titulo || 'Propiedad';
+  document.getElementById('bc-title').textContent = prop.titulo || 'Propiedad';
 
-    const badge = document.getElementById('prop-badge');
-    badge.textContent = [prop.tipo, prop.estado].filter(Boolean).join(' · ') || 'RE/MAX';
+  document.getElementById('prop-badge').textContent =
+    [prop.tipo, prop.estado].filter(Boolean).join(' · ') || 'RE/MAX';
 
-    document.getElementById('prop-title').textContent = prop.titulo || 'Propiedad';
+  document.getElementById('prop-title').textContent = prop.titulo || 'Propiedad';
 
-    const metas = [];
-    if (prop.ciudad || prop.ubicacion) {
-        metas.push(`<span><img src="img/ubicacion.png" class="logo-img"> ${[prop.ubicacion, prop.ciudad].filter(Boolean).join(', ')}</span>`);
-    }
-    //if (prop.m2) metas.push(`<span><img src="img/tama#U00f1o.png" class="logo-img"> ${prop.m2} m²</span>`);
-    //if (prop.recamaras) metas.push(`<span><img src="img/recamaras.png" class="logo-img"> ${prop.recamaras} rec.</span>`);
-    //if (prop.banos) metas.push(`<span><img src="img/ba#U00f1os.pngs.png" class="logo-img"> ${prop.banos} ba#U00f1os.pngs</span>`);
-    document.getElementById('prop-meta').innerHTML = metas.join('');
+  // Meta (ubicación)
+  const metas = [];
+  if (prop.ubicacion || prop.ciudad) {
+    metas.push(`<span><img src="img/ubicacion.png" class="logo-img"> ${prop.ubicacion || prop.ciudad}</span>`);
+  }
+  document.getElementById('prop-meta').innerHTML = metas.join('');
 
-    document.getElementById('prop-price').textContent = formatPrice(prop.precio, prop.moneda);
-    const priceLabel = document.querySelector('.price-label');
-    if (priceLabel) priceLabel.textContent = prop.moneda || 'MXN';
+  document.getElementById('prop-price').textContent = formatPrice(prop.precio, prop.moneda);
+  const priceLabel = document.querySelector('.price-label');
+  if (priceLabel) priceLabel.textContent = prop.moneda || 'MXN';
 
-    const imgs = prop.imagenes || [];
-    const fallback = `https://picsum.photos/seed/${prop.id || 1}/900/600`;
-    const main = imgs[0] || fallback;
-    const thumb1 = imgs[1] || `https://picsum.photos/seed/${(prop.id || 1) + 10}/600/400`;
-    const thumb2 = imgs[2] || `https://picsum.photos/seed/${(prop.id || 1) + 20}/600/400`;
-    const extra = Math.max(0, imgs.length - 3);
+  // ===== GALERÍA con lightbox =====
+  const imgs     = prop.imagenes || [];
+  const fallback = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
+  const allImgs  = imgs.length > 0 ? imgs : [fallback];
 
-    document.getElementById('gallery-grid').innerHTML = `
-        <div class="gallery-main">
-            <img src="${main}" alt="${prop.titulo}" loading="eager">
-        </div>
-        <div class="gallery-thumb">
-            <img src="${thumb1}" alt="Foto 2" loading="lazy">
-        </div>
-        <div class="gallery-thumb">
-            <img src="${thumb2}" alt="Foto 3" loading="lazy">
-            ${extra > 0 ? `<div class="gallery-overlay">+${extra} fotos</div>` : ''}
-        </div>`;
+  const main   = allImgs[0];
+  const thumb1 = allImgs[1] || allImgs[0];
+  const thumb2 = allImgs[2] || allImgs[0];
+  const extra  = Math.max(0, allImgs.length - 3);
 
-    const features = [];
-    if (prop.recamaras) features.push({ icon: '<img src="img/recamaras.png" class="logo-img">', label: `${prop.recamaras} Recámaras` });
-    if (prop.banos) features.push({ icon: '<img src="img/ba#U00f1os.png" class="logo-img">', label: `${prop.banos} ba#U00f1os.png` });
-    if (prop.m2) features.push({ icon: '<img src="img/tama#U00f1o.png" class="logo-img">', label: `${prop.m2} m²` });
-   // if (prop.tipo) features.push({ icon: '<img src="img/terreno.png" class="logo-img">', label: prop.tipo });
-    //if (prop.estado) features.push({ icon: '<img src="img/venta.png" class="logo-img">', label: prop.estado });
-    //if (prop.ciudad) features.push({ icon: '<img src="img/ubicacion.png" class="logo-img">', label: prop.ciudad });
+  document.getElementById('gallery-grid').innerHTML = `
+    <div class="gallery-main" onclick="openLightbox(${JSON.stringify(allImgs)}, 0)">
+      <img src="${main}" alt="${prop.titulo}" loading="eager"
+           onerror="this.src='${fallback}'">
+    </div>
+    <div class="gallery-thumb" onclick="openLightbox(${JSON.stringify(allImgs)}, 1)">
+      <img src="${thumb1}" alt="Foto 2" loading="lazy"
+           onerror="this.src='${fallback}'">
+    </div>
+    <div class="gallery-thumb" onclick="openLightbox(${JSON.stringify(allImgs)}, 2)" style="position:relative;">
+      <img src="${thumb2}" alt="Foto 3" loading="lazy"
+           onerror="this.src='${fallback}'">
+      ${extra > 0 ? `<div class="gallery-overlay" onclick="openLightbox(${JSON.stringify(allImgs)}, 2)">+${extra} fotos</div>` : ''}
+    </div>`;
 
-    if (features.length > 0) {
-        document.getElementById('features-grid').innerHTML = features.map(f => `
-            <div class="feature-item">
-                <span class="fi-icon">${f.icon}</span>
-                <span>${f.label}</span>
-            </div>`).join('');
-        document.getElementById('section-features').style.display = 'block';
-    }
+  // ===== CARACTERÍSTICAS (iconos corregidos) =====
+  const features = [];
+  if (prop.recamaras) features.push({
+    icon: '<img src="img/recamaras.png" class="logo-img" alt="Recámaras">',
+    label: `${prop.recamaras} Recámaras`
+  });
+  if (prop.banos) features.push({
+    icon: '<img src="img/ba%C3%B1os.png" class="logo-img" onerror="this.src=\'img/recamaras.png\'" alt="Baños">',
+    label: `${prop.banos} Baños`
+  });
+  if (prop.m2) features.push({
+    icon: '<img src="img/tama%C3%B1o.png" class="logo-img" onerror="this.src=\'img/terreno.png\'" alt="Tamaño">',
+    label: `${prop.m2} m²`
+  });
 
-    const desc = (prop.descripcion || '').replace(/<[^>]*>/g, '');
+  if (features.length > 0) {
+    document.getElementById('features-grid').innerHTML = features.map(f => `
+      <div class="feature-item">
+        <span class="fi-icon">${f.icon}</span>
+        <span>${f.label}</span>
+      </div>`).join('');
+    document.getElementById('section-features').style.display = 'block';
+  }
 
-if (desc) {
+  // Descripción
+  const desc = (prop.descripcion || '').replace(/<[^>]*>/g, '');
+  if (desc) {
     document.getElementById('prop-desc').textContent = desc;
     document.getElementById('section-desc').style.display = 'block';
+  }
+
+  // Destacados
+  const bullets = prop.destacados || [];
+  if (bullets.length > 0) {
+    document.getElementById('bullets-list').innerHTML = bullets.map(b => `<li>${b}</li>`).join('');
+    document.getElementById('section-bullets').style.display = 'block';
+  }
+
+  // Mapa
+  const lat      = prop.lat || 24.0277;
+  const lng      = prop.lng || -104.6532;
+  const addrText = [prop.ubicacion, prop.ciudad].filter(Boolean).join(', ') || 'Durango, Dgo';
+  document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+  document.getElementById('map-address-text').textContent = addrText;
+  document.getElementById('btn-maps').href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
+  // Agente
+  const agente   = prop.agente || {};
+  const nombre   = agente.nombre   || 'Agente RE/MAX';
+  const telefono = agente.telefono || '';
+  const email    = agente.email    || '';
+  const foto     = agente.foto     || '';
+
+  document.getElementById('agent-name').textContent = nombre;
+  document.getElementById('agent-initials').textContent = initials(nombre);
+
+  if (foto) {
+    document.getElementById('agent-photo-wrap').innerHTML =
+      `<img src="${foto}" class="agent-card-photo" alt="${nombre}" loading="lazy">`;
+  }
+
+  const contacts = [];
+  if (telefono) contacts.push({ icon: '<img src="img/telefono.png" class="logo-img">', value: telefono, href: `tel:${telefono.replace(/\s/g,'')}` });
+  if (email)    contacts.push({ icon: '<img src="img/email.png"    class="logo-img">', value: email,    href: `mailto:${email}` });
+
+  document.getElementById('agent-contacts').innerHTML = contacts.map(c => `
+    <div class="agent-contact-item">
+      <div class="ci-icon">${c.icon}</div>
+      <a href="${c.href}" style="color:inherit;text-decoration:none;">${c.value}</a>
+    </div>`).join('');
+
+  const ctaHref = telefono
+    ? `https://wa.me/${telefono.replace(/\D/g,'')}?text=Hola, me interesa la propiedad: ${encodeURIComponent(prop.titulo || '')}`
+    : (email ? `mailto:${email}` : '#');
+
+  document.getElementById('btn-contact').onclick = () => {
+    if (ctaHref !== '#') window.open(ctaHref, '_blank');
+  };
 }
-    const bullets = prop.destacados || [];
-    if (bullets.length > 0) {
-        document.getElementById('bullets-list').innerHTML = bullets.map(b => `<li>${b}</li>`).join('');
-        document.getElementById('section-bullets').style.display = 'block';
-    }
 
-    const lat = prop.lat || 24.0277;
-    const lng = prop.lng || -104.6532;
-    const addrText = [prop.ubicacion, prop.ciudad].filter(Boolean).join(', ') || 'Durango, Dgo';
-    document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
-    document.getElementById('map-address-text').textContent = addrText;
-    document.getElementById('btn-maps').href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-
-    const agente = prop.agente || {};
-    const nombre = agente.nombre || 'Agente RE/MAX';
-    const telefono = agente.telefono || '';
-    const email = agente.email || '';
-    const foto = agente.foto || '';
-
-    document.getElementById('agent-name').textContent = nombre;
-   const agentTitleEl = document.querySelector('.agent-title');
-if (agentTitleEl) {
-    agentTitleEl.textContent = 'Agente RE/MAX Victoria';
-}
-    document.getElementById('agent-initials').textContent = initials(nombre);
-
-    if (foto) {
-        document.getElementById('agent-photo-wrap').innerHTML =
-            `<img src="${foto}" class="agent-card-photo" alt="${nombre}" loading="lazy">`;
-    }
-
-    const contacts = [];
-    if (telefono) contacts.push({ icon: '<img src="img/telefono.png" class="logo-img">', value: telefono, href: `tel:${telefono.replace(/\s/g, '')}` });
-    if (email) contacts.push({ icon: '<img src="img/email.png" class="logo-img">', value: email, href: `mailto:${email}` });
-
-    document.getElementById('agent-contacts').innerHTML = contacts.map(c => `
-        <div class="agent-contact-item">
-            <div class="ci-icon">${c.icon}</div>
-            <a href="${c.href}" style="color:inherit;text-decoration:none;">${c.value}</a>
-        </div>`).join('');
-
-    const ctaHref = telefono
-        ? `https://wa.me/${telefono.replace(/\D/g, '')}?text=Hola, me interesa la propiedad: ${encodeURIComponent(prop.titulo || '')}`
-        : (email ? `mailto:${email}` : '#');
-
-    const btnContact = document.getElementById('btn-contact');
-    btnContact.onclick = () => {
-        if (ctaHref !== '#') window.open(ctaHref, '_blank');
-    };
-}
-
+/* ===== INIT ===== */
 async function init() {
-    const id = getQueryParam('id');
-    document.getElementById('loading-screen').style.display = 'block';
-    document.getElementById('detail-content').style.display = 'none';
-    document.getElementById('error-screen').style.display = 'none';
+  const id = getQueryParam('id');
+  document.getElementById('loading-screen').style.display = 'block';
+  document.getElementById('detail-content').style.display = 'none';
+  document.getElementById('error-screen').style.display   = 'none';
 
-    try {
-        const property = await fetchProperty(id);
-        render(property);
-        document.getElementById('loading-screen').style.display = 'none';
-        document.getElementById('detail-content').style.display = 'block';
-    } catch (err) {
-        console.error(err);
-        document.getElementById('loading-screen').style.display = 'none';
-        document.getElementById('error-screen').style.display = 'block';
-    }
+  try {
+    const property = await fetchProperty(id);
+    if (!property) throw new Error('No se encontró la propiedad');
+    render(property);
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('detail-content').style.display = 'block';
+  } catch (err) {
+    console.error(err);
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('error-screen').style.display   = 'block';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>
-<!-- FOOTER  -->
-<footer class="footer">
-  <div class="footer-container">
-
-    <!-- Logo + nombre -->
-    <div class="footer-logo">
-      <img src="img/Remaxlogoblanco.png" class="footer-logo-img">
-    </div>
-
-    <!--  footer -->
-    <ul class="footer-menu">
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="index.html">Propiedades</a></li>
-      <li><a href="#">Nosotros</a></li>
-      <li><a href="#">Contacto</a></li>
-    </ul>
-
-    <!-- Icono menu -->
-    <div class="footer-icon">
-    </div>
-
-  </div>
-
-  <!-- Li­nea separadora -->
-  <hr class="footer-line">
-
-  <!-- Derechos -->
-  <p class="footer-copy">
-    Remax Victoria. Todos los derechos reservados ©
-  </p>
-</footer>
 </html>
