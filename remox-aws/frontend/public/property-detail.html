@@ -15,36 +15,23 @@
 <!--  NAVBAR  -->
 <nav class="navbar">
   <div class="nav-container">
-
-    <a href="index.html" class="nav-logo" onclick="window.location.href='index.html'">
-  <span class="logo-remax">
-    <img src="img/Remaxlogoblanco.png" class="logo-img">
-  </span>
-</a>
-
-
+    <a href="index.html" class="nav-logo">
+      <img src="img/Remaxlogoblanco.png" class="logo-img">
+    </a>
     <ul class="nav-menu">
       <li class="menu-item">
-        <span>Quiero comprar </span>
+        <span>Aviso de privacidad ▾</span>
         <div class="dropdown">
-          <p>Simulador hipotecario</p>
-          <p>FOVISSSTE</p>
-          <p>INFONAVIT</p>
+          <p><a href="docs/NOM_247_Teresa_Molina_Rocha.pdf" target="_blank">Contrato NOM 247</a></p>
+          <p><a href="docs/CARTA_DE_DERECHOS_DE_EL_CONSUMIDOR_NOM_247.pdf" target="_blank">Carta de Derechos del Consumidor</a></p>
+          <p><a href="https://remax.com.mx/codigoetica" target="_blank">Código de ética</a></p>
         </div>
       </li>
-
       <li class="menu-item">
-        <span>Aviso de privacidad</span>
-        <div class="dropdown">
-          <p>Contrato NOM 247</p>
-          <p>Código de Ética</p>
-        </div>
+        <a href="#contacto" style="color:inherit;text-decoration:none;">Contacto</a>
       </li>
-
-      <li class="menu-item">Agentes Victoriosos</li>
-      <li class="menu-item">Contacto</li>
     </ul>
-
+  </div>
 </nav>
 
 <!--BREADCRUMB  -->
@@ -333,9 +320,9 @@ function render(prop) {
     if (prop.ciudad || prop.ubicacion) {
         metas.push(`<span><img src="img/ubicacion.png" class="logo-img"> ${[prop.ubicacion, prop.ciudad].filter(Boolean).join(', ')}</span>`);
     }
-    //if (prop.m2) metas.push(`<span><img src="img/tamaño.png" class="logo-img"> ${prop.m2} m²</span>`);
+    //if (prop.m2) metas.push(`<span><img src="img/tama#U00f1o.png" class="logo-img"> ${prop.m2} m²</span>`);
     //if (prop.recamaras) metas.push(`<span><img src="img/recamaras.png" class="logo-img"> ${prop.recamaras} rec.</span>`);
-    //if (prop.banos) metas.push(`<span><img src="img/baños.png" class="logo-img"> ${prop.banos} baños</span>`);
+    //if (prop.banos) metas.push(`<span><img src="img/ba#U00f1os.pngs.png" class="logo-img"> ${prop.banos} ba#U00f1os.pngs</span>`);
     document.getElementById('prop-meta').innerHTML = metas.join('');
 
     document.getElementById('prop-price').textContent = formatPrice(prop.precio, prop.moneda);
@@ -363,8 +350,8 @@ function render(prop) {
 
     const features = [];
     if (prop.recamaras) features.push({ icon: '<img src="img/recamaras.png" class="logo-img">', label: `${prop.recamaras} Recámaras` });
-    if (prop.banos) features.push({ icon: '<img src="img/baños.png" class="logo-img">', label: `${prop.banos} Baños` });
-    if (prop.m2) features.push({ icon: '<img src="img/tamaño.png" class="logo-img">', label: `${prop.m2} m²` });
+    if (prop.banos) features.push({ icon: '<img src="img/ba#U00f1os.png" class="logo-img">', label: `${prop.banos} ba#U00f1os.png` });
+    if (prop.m2) features.push({ icon: '<img src="img/tama#U00f1o.png" class="logo-img">', label: `${prop.m2} m²` });
    // if (prop.tipo) features.push({ icon: '<img src="img/terreno.png" class="logo-img">', label: prop.tipo });
     //if (prop.estado) features.push({ icon: '<img src="img/venta.png" class="logo-img">', label: prop.estado });
     //if (prop.ciudad) features.push({ icon: '<img src="img/ubicacion.png" class="logo-img">', label: prop.ciudad });
