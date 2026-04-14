@@ -1,101 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- Configuración básica del documento -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Título de la página -->
-  <title>RE/MAX Property Explorer</title>
-
-  <!-- Fuente de Google (tipografía principal) -->
+  <title>RE/MAX Victoria - Durango</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Estilos principales del sitio -->
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<!-- NAVBAR (Barra de navegación superior) -->
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-container">
 
-    <!-- Logo de RE/MAX (redirige al inicio) -->
-    <a href="index.html" class="nav-logo" onclick="window.location.href='index.html'">
-  <span class="logo-remax">
-    <img src="img/Remaxlogoblanco.png" class="logo-img">
-  </span>
-</a>
+    <a href="index.html" class="nav-logo">
+      <img src="img/Remaxlogoblanco.png" class="logo-img">
+    </a>
 
-    <!-- Menú de navegación -->
     <ul class="nav-menu">
 
-      <!-- Dropdown: opciones de compra -->
-      <li class="menu-item">
-        <span>Quiero comprar ▾</span>
-        <div class="dropdown">
-          <p>Simulador hipotecario</p>
-          <p>FOVISSSTE</p>
-          <p>INFONAVIT</p>
-        </div>
-      </li>
-
-      <!-- Dropdown: documentos legales -->
       <li class="menu-item">
         <span>Aviso de privacidad ▾</span>
         <div class="dropdown">
-          <p>Contrato NOM 247</p>
-          <p>Código de ética</p>
+          <p><a href="docs/NOM_247_Teresa_Molina_Rocha.pdf" target="_blank">Contrato NOM 247</a></p>
+          <p><a href="docs/CARTA_DE_DERECHOS_DE_EL_CONSUMIDOR_NOM_247.pdf" target="_blank">Carta de Derechos del Consumidor</a></p>
+          <p><a href="https://remax.com.mx/codigoetica" target="_blank">Código de ética</a></p>
         </div>
       </li>
 
-      <!-- Enlaces simples -->
-      <li class="menu-item">Agentes Victoriosos</li>
-      <li class="menu-item">Contacto</li>
+      <li class="menu-item">
+        <a href="#contacto" style="color:inherit;text-decoration:none;">Contacto</a>
+      </li>
+
     </ul>
-
-
 
   </div>
 </nav>
 
-<!-- HERO SECTION -->
+<!-- HERO -->
 <section class="hero">
   <div class="hero-overlay">
     <div class="hero-content">
 
-      <!-- Mensaje principal -->
       <h2>¿Deseas comprar casa con algún tipo de crédito?</h2>
 
-      <!-- Botones que cargan propiedades -->
       <div class="hero-buttons">
-        <button onclick="fetchAllProperties()">Crédito Bancario</button>
-        <button onclick="fetchAllProperties()">FOVISSSTE</button>
-        <button onclick="fetchAllProperties()">INFONAVIT</button>
+        <button onclick="abrirModal('BANCARIO')">Crédito Bancario</button>
+        <button onclick="abrirModal('FOVISSSTE')">FOVISSSTE</button>
+        <button onclick="abrirModal('INFONAVIT')">INFONAVIT</button>
       </div>
 
     </div>
   </div>
 </section>
 
+<!-- MODAL CRÉDITO -->
+<div id="creditModal" class="modal" onclick="cerrarModalFuera(event)">
+  <div class="credit-card">
 
-<!-- CONTENEDOR PRINCIPAL -->
+    <div class="credit-header" id="creditHeader">
+      <h2 id="tituloCredito">Simular crédito</h2>
+      <span class="close" onclick="cerrarModal()">×</span>
+    </div>
+
+    <div class="credit-body">
+
+      <div class="field">
+        <span>Ingreso mensual</span>
+        <input type="number" id="ingreso" placeholder="15000">
+      </div>
+
+      <div class="field">
+        <span>Edad</span>
+        <input type="number" id="edad" placeholder="30">
+      </div>
+
+      <div class="field">
+        <span>Ahorro</span>
+        <input type="number" id="ahorro" placeholder="100000">
+      </div>
+
+      <div class="resultado-card hidden" id="resultadoBox">
+        <p>Tu crédito estimado</p>
+        <h1 id="resultadoCredito">$0</h1>
+      </div>
+
+      <button class="btn-calcular" onclick="calcularCredito()">Calcular</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- PROPIEDADES -->
 <div class="container">
 
-  <!-- Título de sección -->
   <h2 class="section-title">Propiedades recientes</h2>
 
-  <!-- FILTROS DE BÚSQUEDA -->
   <div class="filter-bar">
 
-    <!-- Filtro por ubicación -->
     <div class="filter-item">
       <label>Ubicación</label>
       <input type="text" id="searchLocation">
     </div>
 
-    <!-- Filtro por precio -->
     <div class="filter-item">
       <label>Precio</label>
       <select id="priceRange">
@@ -106,7 +114,6 @@
       </select>
     </div>
 
-    <!-- Filtro por tipo de propiedad -->
     <div class="filter-item">
       <label>Tipo</label>
       <select id="category">
@@ -117,107 +124,156 @@
       </select>
     </div>
 
-    <!-- Botón para aplicar filtros -->
     <button class="filter-btn-search" onclick="applyFilters()">
       <img src="img/lupa1.png" class="search-icon">
     </button>
 
   </div>
-  <div id="results" class="property-grid"></div>
+
+  <div id="results"></div>
 
 </div>
 
-<!-- SCRIPT PRINCIPAL -->
-<script src="app.js"></script>
-
-</body>
-<!-- ===================================================== -->
-<!-- TESTIMONIOS (CARRUSEL CSS INFINITO) -->
-<!-- ===================================================== -->
+<!-- TESTIMONIOS -->
 <section class="testimonios">
   <h2 class="section-title">Opiniones de clientes</h2>
 
   <div class="carousel">
-
-    <!-- GRUPO ORIGINAL -->
     <div class="group">
+      <div class="card"><strong>Carlos M.</strong><br>⭐⭐⭐⭐⭐<br>Excelente atención.</div>
+      <div class="card"><strong>María G.</strong><br>⭐⭐⭐⭐<br>Muy buena experiencia.</div>
+      <div class="card"><strong>Luis R.</strong><br>⭐⭐⭐⭐⭐<br>Recomendado.</div>
+    </div>
+    <div class="group" aria-hidden="true">
+      <div class="card"><strong>Carlos M.</strong><br>⭐⭐⭐⭐⭐<br>Excelente atención.</div>
+      <div class="card"><strong>María G.</strong><br>⭐⭐⭐⭐<br>Muy buena experiencia.</div>
+      <div class="card"><strong>Luis R.</strong><br>⭐⭐⭐⭐⭐<br>Recomendado.</div>
+    </div>
+  </div>
+</section>
 
-      <div class="card">
-        <strong>Carlos M.</strong><br>
-        ⭐⭐⭐⭐⭐<br>
-        Excelente atención y muy buen servicio.
+<!-- CONTACTO -->
+<section class="contact-section" id="contacto">
+  <div class="contact-container">
+
+    <div class="contact-info">
+      <div class="contact-card">
+        <div class="icon"><img src="img/ubicacion.png" alt="Ubicación" style="width:32px;"></div>
+        <p>Castañiza 135, Nueva Vizcaya, Durango</p>
       </div>
-
-      <div class="card">
-        <strong>María G.</strong><br>
-        ⭐⭐⭐⭐<br>
-        Muy buena experiencia, todo fue claro.
+      <div class="contact-card">
+        <div class="icon"><img src="img/telefono.png" alt="Teléfono" style="width:32px;"></div>
+        <p>618 811 1114</p>
       </div>
-
-      <div class="card">
-        <strong>Luis R.</strong><br>
-        ⭐⭐⭐⭐⭐<br>
-        Recomendado al 100%.
+      <div class="contact-card">
+        <div class="icon"><img src="img/email.png" alt="Email" style="width:32px;"></div>
+        <p>contacto@remaxvictoria.mx</p>
       </div>
-
     </div>
 
-    <!-- GRUPO DUPLICADO (para loop infinito) -->
-    <div class="group" aria-hidden="true">
+    <div class="contact-form">
+      <h2>CONTÁCTANOS</h2>
+      <form onsubmit="enviarContacto(event)">
+        <div class="form-row">
+          <input type="text" placeholder="Nombre" required>
+          <input type="text" placeholder="Apellido" required>
+        </div>
+        <div class="form-row">
+          <input type="email" placeholder="E-mail" required>
+          <input type="text" placeholder="Teléfono">
+        </div>
+        <textarea placeholder="¿En qué podemos ayudarte?"></textarea>
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
 
-      <div class="card">
-        <strong>Carlos M.</strong><br>
-        ⭐⭐⭐⭐⭐<br>
-        Excelente atención y muy buen servicio.
-      </div>
-
-      <div class="card">
-        <strong>María G.</strong><br>
-        ⭐⭐⭐⭐<br>
-        Muy buena experiencia, todo fue claro.
-      </div>
-
-      <div class="card">
-        <strong>Luis R.</strong><br>
-        ⭐⭐⭐⭐⭐<br>
-        Recomendado al 100%.
-      </div>
-
+    <div class="contact-image">
+      <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80" alt="Agente RE/MAX">
     </div>
 
   </div>
 </section>
-<!-- FOOTER (Pie de página) -->
 
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-container">
 
-    <!-- Logo + nombre -->
     <div class="footer-logo">
       <img src="img/Remaxlogoblanco.png" class="footer-logo-img">
     </div>
 
-    <!-- Menú del footer -->
     <ul class="footer-menu">
       <li><a href="index.html">Inicio</a></li>
       <li><a href="index.html">Propiedades</a></li>
-      <li><a href="#">Nosotros</a></li>
-      <li><a href="#">Contacto</a></li>
+      <li><a href="#contacto">Contacto</a></li>
     </ul>
 
-    <!-- Icono menú  -->
-    <div class="footer-icon">
-      ☰
-    </div>
+    <div class="footer-icon">☰</div>
 
   </div>
 
-  <!-- Línea separadora -->
   <hr class="footer-line">
 
-  <!-- Derechos -->
-  <p class="footer-copy">
-    Remax Victoria. Todos los derechos reservados ©
-  </p>
+  <p class="footer-copy">Remax Victoria. Todos los derechos reservados ©</p>
 </footer>
+
+<script src="app.js"></script>
+
+<script>
+  /* ===== MODAL CRÉDITO ===== */
+  const tiposCredito = {
+    BANCARIO:  { titulo: 'Crédito Bancario', factor: 0.30 },
+    FOVISSSTE: { titulo: 'FOVISSSTE',        factor: 0.25 },
+    INFONAVIT: { titulo: 'INFONAVIT',        factor: 0.22 },
+  };
+
+  function abrirModal(tipo) {
+    const config = tiposCredito[tipo] || tiposCredito.BANCARIO;
+    document.getElementById('tituloCredito').textContent = config.titulo;
+    document.getElementById('creditModal').dataset.factor = config.factor;
+    document.getElementById('resultadoBox').classList.add('hidden');
+    document.getElementById('ingreso').value = '';
+    document.getElementById('edad').value   = '';
+    document.getElementById('ahorro').value  = '';
+    document.getElementById('creditModal').style.display = 'flex';
+  }
+
+  function cerrarModal() {
+    document.getElementById('creditModal').style.display = 'none';
+  }
+
+  function cerrarModalFuera(e) {
+    if (e.target === document.getElementById('creditModal')) cerrarModal();
+  }
+
+  function calcularCredito() {
+    const ingreso = Number(document.getElementById('ingreso').value) || 0;
+    const ahorro  = Number(document.getElementById('ahorro').value)  || 0;
+    const factor  = Number(document.getElementById('creditModal').dataset.factor) || 0.30;
+
+    if (ingreso <= 0) { alert('Ingresa tu ingreso mensual.'); return; }
+
+    const credito = ingreso * factor * 240 + ahorro;
+    document.getElementById('resultadoCredito').textContent =
+      credito.toLocaleString('es-MX', { style:'currency', currency:'MXN', maximumFractionDigits:0 });
+    document.getElementById('resultadoBox').classList.remove('hidden');
+  }
+
+  /* ===== CONTACTO ===== */
+  function enviarContacto(e) {
+    e.preventDefault();
+    alert('¡Mensaje enviado! Nos pondremos en contacto contigo pronto.');
+    e.target.reset();
+  }
+
+  /* Cerrar con ESC */
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+
+  /* Scroll navbar */
+  window.addEventListener('scroll', () => {
+    document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+</script>
+
+</body>
 </html>
