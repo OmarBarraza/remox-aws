@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propiedades - RE/MAX Victoria Durango</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .nav-logo .logo-img { height: 120px; }
+
+    .property-image-wrap { position: relative; }
+    .op-badge {
+      position: absolute; top: 10px; left: 10px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; color: white;
+      z-index: 2; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .op-venta { background: #E11B22; }
+    .op-renta { background: #1f4e79; }
+
+    /* PAGE HEADER */
+    .page-header {
+      background: #0b2742;
+      padding: 120px 20px 40px;
+      text-align: center;
+      color: white;
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .page-header p { opacity: 0.75; font-size: 1rem; }
+
+    /* FILTROS AVANZADOS */
+    .filters-section {
+      background: white;
+      padding: 28px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .filters-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 140px;
+    }
+    .filter-group label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #7a8fa6;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-group select,
+    .filter-group input {
+      padding: 10px 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: #2d3748;
+      outline: none;
+      background: white;
+      transition: border-color 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%230b2742' height='16' viewBox='0 0 20 20' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+    }
+    .filter-group input {
+      background-image: none;
+      padding-right: 12px;
+    }
+    .filter-group select:focus,
+    .filter-group input:focus { border-color: #1f4e79; }
+
+    .btn-buscar {
+      padding: 10px 28px;
+      background: #E11B22;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+      height: 44px;
+    }
+    .btn-buscar:hover { background: #c4161c; transform: scale(1.02); }
+
+    .btn-limpiar {
+      padding: 10px 18px;
+      background: #f1f5f9;
+      color: #4a5568;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      height: 44px;
+    }
+    .btn-limpiar:hover { background: #e2e8f0; }
+
+    /* RESULTADOS */
+    .results-section {
+      max-width: 1200px;
+      margin: 36px auto 60px;
+      padding: 0 20px;
+    }
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .results-count {
+      font-size: 0.95rem;
+      color: #4a5568;
+    }
+    .results-count strong { color: #1f4e79; }
+
+    /* PAGINACIÓN */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+    .pagination button {
+      width: 40px; height: 40px;
+      border: 1.5px solid #e2e8f0;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: #4a5568;
+      transition: 0.2s;
+    }
+    .pagination button:hover { border-color: #1f4e79; color: #1f4e79; }
+    .pagination button.active {
+      background: #1f4e79; color: white; border-color: #1f4e79;
+    }
+    .pagination button:disabled { opacity: 0.4; cursor: default; }
+
+    /* WhatsApp flotante */
+    .whatsapp-float {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 56px; height: 56px; background: #25D366;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 20px rgba(37,211,102,0.45); z-index: 9000; transition: transform 0.2s;
+    }
+    .whatsapp-float:hover { transform: scale(1.1); }
+    .whatsapp-float svg { width: 30px; height: 30px; fill: white; }
+
+    @media(max-width:768px){
+      .filters-inner { flex-direction: column; }
+      .filter-group { min-width: 100%; }
+      .btn-buscar, .btn-limpiar { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar scrolled">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="img/Remaxlogoblanco.png" class="logo-img">
+    </a>
+    <ul class="nav-menu">
+      <li class="menu-item">
+        <span>Aviso de privacidad ▾</span>
+        <div class="dropdown">
+          <p><a href="nom247.html">Contrato NOM 247</a></p>
+          <p><a href="carta-derechos.html">Carta de Derechos del Consumidor</a></p>
+          <p><a href="https://remax.com.mx/codigoetica" target="_blank">Código de ética</a></p>
+        </div>
+      </li>
+      <li class="menu-item">
+        <a href="contacto.html" style="color:inherit;text-decoration:none;">Contacto</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Todas las Propiedades</h1>
+  <p>RE/MAX Victoria · Durango</p>
+</div>
+
+<!-- FILTROS -->
+<div class="filters-section">
+  <div class="filters-inner">
+
+    <div class="filter-group">
+      <label>Ubicación</label>
+      <input type="text" id="f-ubicacion" placeholder="Colonia, ciudad...">
+    </div>
+
+    <div class="filter-group">
+      <label>Rango de precio</label>
+      <select id="f-precio">
+        <option value="">Todos los precios</option>
+        <option value="0-1">$0 — $1,000,000</option>
+        <option value="1-2">$1,000,000 — $2,000,000</option>
+        <option value="2-3">$2,000,000 — $3,000,000</option>
+        <option value="3+">Más de $3,000,000</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Tipo de propiedad</label>
+      <select id="f-tipo">
+        <option value="">Todos</option>
+        <option value="casa">Casa</option>
+        <option value="departamento">Departamento</option>
+        <option value="terreno">Terreno</option>
+        <option value="local">Local comercial</option>
+        <option value="oficina">Oficina</option>
+        <option value="bodega">Bodega</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Operación</label>
+      <select id="f-operacion">
+        <option value="">Venta y renta</option>
+        <option value="1">En venta</option>
+        <option value="2">En renta</option>
+      </select>
+    </div>
+
+    <button class="btn-buscar" onclick="buscar()">Buscar</button>
+    <button class="btn-limpiar" onclick="limpiar()">Limpiar</button>
+
+  </div>
+</div>
+
+<!-- RESULTADOS -->
+<div class="results-section">
+  <div class="results-bar">
+    <div class="results-count" id="results-count">Cargando...</div>
+  </div>
+  <div id="results-grid"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-logo"><img src="img/Remaxlogoblanco.png" class="footer-logo-img"></div>
+    <ul class="footer-menu">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="propiedades.html">Propiedades</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
+    <div class="footer-icon">☰</div>
+  </div>
+  <hr class="footer-line">
+  <p class="footer-copy">Remax Victoria. Todos los derechos reservados ©</p>
+</footer>
+
+<!-- WHATSAPP -->
+<a class="whatsapp-float" href="https://wa.me/526182761777" target="_blank">
+  <svg viewBox="0 0 24 24">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+const API_BASE = '/api';
+const PAGE_SIZE = 12;
+const FALLBACK  = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
+
+let allProps    = [];
+let filtered    = [];
+let currentPage = 1;
+
+/* ===== NAVBAR SCROLL ===== */
+window.addEventListener('scroll', () =>
+  document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50)
+);
+
+/* ===== CARD ===== */
+function buildCard(p) {
+  const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
+  const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
+  return `
+  <div class="property-card" onclick='goToDetail(${JSON.stringify(p)})'>
+    <div class="property-image-wrap">
+      <img src="${p.imagen || FALLBACK}" class="property-image" onerror="this.src='${FALLBACK}'">
+      <div class="remax-badge">RE/MAX</div>
+      <span class="op-badge ${opClass}">${opLabel}</span>
+    </div>
+    <div class="property-body">
+      <div class="property-title">${p.titulo || 'Propiedad'}</div>
+      <div class="property-address">
+        <img src="img/ubicacion.png" class="logo-img"> ${p.ubicacion || 'Durango'}
+      </div>
+      <div class="property-price">
+        ${Number(p.precio||0).toLocaleString('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0})}
+      </div>
+    </div>
+  </div>`;
+}
+
+function goToDetail(p) {
+  const id = p?.propiedad_id || p?.id || '';
+  window.location.href = id
+    ? `property-detail.html?id=${encodeURIComponent(id)}`
+    : 'property-detail.html';
+}
+
+/* ===== RENDER PÁGINA ===== */
+function renderPage() {
+  const grid  = document.getElementById('results-grid');
+  const count = document.getElementById('results-count');
+  const pag   = document.getElementById('pagination');
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const start      = (currentPage - 1) * PAGE_SIZE;
+  const slice      = filtered.slice(start, start + PAGE_SIZE);
+
+  count.innerHTML = filtered.length
+    ? `<strong>${filtered.length}</strong> propiedades encontradas`
+    : 'No se encontraron propiedades con esos filtros.';
+
+  if (!slice.length) {
+    grid.innerHTML = '<p style="padding:30px;color:#666;text-align:center;">Sin resultados.</p>';
+    pag.innerHTML  = '';
+    return;
+  }
+
+  grid.innerHTML = `<div class="property-grid">${slice.map(buildCard).join('')}</div>`;
+
+  /* Paginación */
+  if (totalPages <= 1) { pag.innerHTML = ''; return; }
+
+  let btns = '';
+  btns += `<button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+      btns += `<button class="${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (Math.abs(i - currentPage) === 3) {
+      btns += `<button disabled>…</button>`;
+    }
+  }
+  btns += `<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  pag.innerHTML = btns;
+}
+
+function goPage(n) {
+  currentPage = n;
+  renderPage();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===== FILTRAR ===== */
+function buscar() {
+  const ubicacion = (document.getElementById('f-ubicacion').value || '').toLowerCase();
+  const precio    = document.getElementById('f-precio').value;
+  const tipo      = document.getElementById('f-tipo').value;
+  const operacion = document.getElementById('f-operacion').value;
+
+  filtered = allProps.filter(p => {
+    if (ubicacion && !(p.ubicacion||'').toLowerCase().includes(ubicacion)) return false;
+
+    if (precio) {
+      const v = Number(p.precio||0);
+      if (precio === '0-1' && !(v >= 0       && v < 1000000))  return false;
+      if (precio === '1-2' && !(v >= 1000000 && v < 2000000))  return false;
+      if (precio === '2-3' && !(v >= 2000000 && v < 3000000))  return false;
+      if (precio === '3+'  && !(v >= 3000000))                  return false;
+    }
+
+    if (tipo && !(p.tipo||'').toLowerCase().includes(tipo)) return false;
+    if (operacion && String(p.operacion) !== operacion)      return false;
+
+    return true;
+  });
+
+  currentPage = 1;
+  renderPage();
+}
+
+function limpiar() {
+  document.getElementById('f-ubicacion').value  = '';
+  document.getElementById('f-precio').value     = '';
+  document.getElementById('f-tipo').value       = '';
+  document.getElementById('f-operacion').value  = '';
+  filtered    = [...allProps];
+  currentPage = 1;
+  renderPage();
+}
+
+/* ===== FETCH ===== */
+async function init() {
+  document.getElementById('results-count').textContent = 'Cargando propiedades...';
+  try {
+    const res  = await fetch(`${API_BASE}/propiedades`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    let props  = Array.isArray(data) ? data : data.data || [];
+
+    if (data.raw?.data?.prop_data) {
+      const rawMap = {};
+      data.raw.data.prop_data.forEach(r => { rawMap[r.propiedad_id] = r.operacion; });
+      props = props.map(p => ({
+        ...p,
+        operacion: p.operacion || rawMap[p.propiedad_id] || rawMap[p.id] || '1'
+      }));
+    }
+
+    allProps = props;
+    filtered = [...allProps];
+
+    // Si viene con filtro de precio desde la URL (botones de crédito del index)
+    const params = new URLSearchParams(window.location.search);
+    const maxP   = params.get('maxPrecio');
+    const op     = params.get('operacion');
+    if (maxP) {
+      document.getElementById('f-precio').value = maxP;
+      filtered = filtered.filter(p => Number(p.precio||0) <= Number(maxP));
+    }
+    if (op) {
+      document.getElementById('f-operacion').value = op;
+      filtered = filtered.filter(p => String(p.operacion) === op);
+    }
+
+    renderPage();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('results-count').textContent = `Error al cargar: ${e.message}`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
