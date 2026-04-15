@@ -21,10 +21,12 @@ async function fetchAllProperties(){
     const data = await res.json();
     let properties = Array.isArray(data) ? data : data.data || [];
 
-    // Guardamos operacion desde raw si viene
+    // Preserva el campo operacion desde raw si viene
     if (data.raw?.data?.prop_data) {
       const rawMap = {};
-      data.raw.data.prop_data.forEach(r => { rawMap[r.propiedad_id] = r.operacion; });
+      data.raw.data.prop_data.forEach(r => {
+        rawMap[r.propiedad_id] = r.operacion;
+      });
       properties = properties.map(p => ({
         ...p,
         operacion: p.operacion || rawMap[p.propiedad_id] || rawMap[p.id] || '1'
@@ -38,7 +40,7 @@ async function fetchAllProperties(){
       return;
     }
 
-    // Llama al render del index si existe, sino usa el interno
+    // Llama al render del index si existe
     if (typeof renderProperties === 'function') {
       renderProperties(properties);
     }
@@ -47,11 +49,6 @@ async function fetchAllProperties(){
     console.error('Error al cargar propiedades:', e);
     results.innerHTML = `<p style="padding:20px;color:#c00;">Error al cargar propiedades. Verifica que el servidor esté corriendo.<br><small>${e.message}</small></p>`;
   }
-}
-
-/* ===== INIT ===== */
-window.onload = fetchAllProperties;
-  renderProperties(filtered);
 }
 
 /* ===== INIT ===== */
