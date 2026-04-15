@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .nav-logo .logo-img { height: 120px; }
+    .nav-logo .logo-img { height: 55px; }
     body { background: #f5f7fa; }
     .contacto-wrap {
       max-width: 1200px;
@@ -134,6 +134,19 @@
       }
       .dropdown p { color: #1f4e79 !important; }
       .menu-item.open .dropdown { display: block; }
+    }
+  
+    /* Footer siempre abajo */
+    html, body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    body > *:not(footer):not(nav):not(script) {
+      flex-shrink: 0;
+    }
+    .footer {
+      margin-top: auto !important;
     }
   </style>
 </head>
