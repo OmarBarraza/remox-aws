@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contrato NOM-247 - RE/MAX Victoria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Poppins",sans-serif;background:#f5f7fa;min-height:100vh}
+.nav-logo .logo-img{height:120px}
+.legal-wrap{max-width:1000px;margin:120px auto 60px;padding:0 20px}
+.legal-title{font-size:1.5rem;font-weight:700;color:#1f4e79;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #e2e8f0}
+.legal-iframe{width:100%;height:80vh;border:none;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,0.12)}
+</style>
+</head>
+<body>
+
+<nav class="navbar scrolled">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <img src="img/Remaxlogoblanco.png" class="logo-img">
+    </a>
+    <ul class="nav-menu">
+      <li class="menu-item">
+        <span>Aviso de privacidad ▾</span>
+        <div class="dropdown">
+          <p><a href="nom247.html">Contrato NOM 247</a></p>
+          <p><a href="carta-derechos.html">Carta de Derechos del Consumidor</a></p>
+          <p><a href="https://remax.com.mx/codigoetica" target="_blank">Código de ética</a></p>
+        </div>
+      </li>
+      <li class="menu-item">
+        <a href="contacto.html" style="color:inherit;text-decoration:none;">Contacto</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="legal-wrap">
+  <div class="legal-title">Contrato de Adhesión NOM-247-SE-2021 — Teresa Guadalupe Molina Rocha</div>
+  <iframe class="legal-iframe"
+    src="https://drive.google.com/file/d/1lXkl0FV82TrSUYNNhG40eDsFuHZ6yYeO/preview"
+    allowfullscreen loading="lazy">
+  </iframe>
+</div>
+
+<script>
+  window.addEventListener('scroll', () =>
+    document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50)
+  );
+</script>
+</body>
+</html>
