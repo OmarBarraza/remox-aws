@@ -625,7 +625,7 @@ function render(prop) {
     </div>`).join('');
 
   const ctaHref = telefono
-    ? `https://wa.me/${telefono.replace(/\D/g,'')}?text=Hola, me interesa la propiedad: ${encodeURIComponent(prop.titulo||'')}`
+    ? `https://wa.me/${telefono.replace(/\D/g,'')}?text=Hola, estoy viendo su pagina remaxvictoria.mx, me interesa la propiedad: ${encodeURIComponent(prop.titulo||'')}`
     : (email?`mailto:${email}`:'#');
 
   document.getElementById('btn-contact').onclick = () => {
