@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     /* Logo más grande sin afectar navbar */
-    .nav-logo .logo-img { height: 55px; }
+    .nav-logo .logo-img { height: 120px; }
 
     /* Etiquetas de operación en cards */
     .property-image-wrap { position: relative; }
@@ -28,9 +28,12 @@
     .op-venta  { background: #E11B22; }
     .op-renta  { background: #1f4e79; }
 
-    /* Hero con imagen local */
+    /* Hero con imagen local — sobreescribe styles.css */
+    section.hero,
     .hero {
       background-image: url('img/14_post.png') !important;
+      background-size: cover !important;
+      background-position: center !important;
     }
 
     /* Mapa en lugar del formulario */
