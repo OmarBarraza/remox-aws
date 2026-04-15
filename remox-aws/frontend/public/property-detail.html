@@ -9,99 +9,126 @@
 <link rel="stylesheet" href="property-detail.css">
 <style>
 /* ===== LIGHTBOX ===== */
-.lightbox {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.92);
-  z-index: 99999;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.lightbox.active { display: flex; }
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;flex-direction:column;align-items:center;justify-content:center}
+.lightbox.active{display:flex}
+.lightbox-img-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:100%;max-width:960px;padding:0 60px}
+.lightbox-img{max-width:100%;max-height:70vh;border-radius:10px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lightbox-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;font-size:2rem;width:48px;height:48px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.lightbox-btn:hover{background:rgba(255,255,255,.3)}
+.lightbox-btn.prev{left:8px}.lightbox-btn.next{right:8px}
+.lightbox-close{position:absolute;top:18px;right:22px;background:none;border:none;color:#fff;font-size:2.4rem;cursor:pointer;line-height:1;z-index:2}
+.lightbox-counter{color:rgba(255,255,255,.7);font-size:.9rem;margin-top:12px;font-family:'Poppins',sans-serif}
+.lightbox-thumbnails{display:flex;gap:8px;margin-top:14px;max-width:960px;overflow-x:auto;padding:4px 16px 8px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent}
+.lightbox-thumbnails img{width:72px;height:52px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:.5;border:2px solid transparent;transition:opacity .2s,border-color .2s;flex-shrink:0}
+.lightbox-thumbnails img.active,.lightbox-thumbnails img:hover{opacity:1;border-color:#E11B22}
+.gallery-main,.gallery-thumb{cursor:pointer}
+.gallery-main img,.gallery-thumb img{cursor:pointer}
 
-.lightbox-img-wrap {
-  position: relative;
+/* ===== SECCIÓN DETALLES ===== */
+.details-section { margin: 28px 0; }
+.details-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f4e79;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e8f0f8;
+}
+
+/* Grid de detalles estilo imagen */
+.detalles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px 24px;
+}
+@media(max-width: 768px){ .detalles-grid{ grid-template-columns: repeat(2,1fr); } }
+@media(max-width: 480px){ .detalles-grid{ grid-template-columns: 1fr; } }
+
+.detalle-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 960px;
-  padding: 0 60px;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
-.lightbox-img {
-  max-width: 100%;
-  max-height: 70vh;
-  border-radius: 10px;
-  object-fit: contain;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-}
-.lightbox-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.15);
-  border: none;
-  color: white;
-  font-size: 2rem;
-  width: 48px;
-  height: 48px;
+.detalle-icon {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  cursor: pointer;
+  background: #1f4e79;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
-}
-.lightbox-btn:hover { background: rgba(255,255,255,0.3); }
-.lightbox-btn.prev { left: 8px; }
-.lightbox-btn.next { right: 8px; }
-.lightbox-close {
-  position: absolute;
-  top: 18px;
-  right: 22px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 2.4rem;
-  cursor: pointer;
-  line-height: 1;
-  z-index: 2;
-}
-.lightbox-counter {
-  color: rgba(255,255,255,0.7);
-  font-size: 0.9rem;
-  margin-top: 12px;
-  font-family: 'Poppins', sans-serif;
-}
-.lightbox-thumbnails {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-  max-width: 960px;
-  overflow-x: auto;
-  padding: 4px 16px 8px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.3) transparent;
-}
-.lightbox-thumbnails img {
-  width: 72px;
-  height: 52px;
-  object-fit: cover;
-  border-radius: 6px;
-  cursor: pointer;
-  opacity: 0.5;
-  border: 2px solid transparent;
-  transition: opacity 0.2s, border-color 0.2s;
   flex-shrink: 0;
 }
-.lightbox-thumbnails img.active,
-.lightbox-thumbnails img:hover { opacity: 1; border-color: #E11B22; }
+.detalle-icon svg { width: 22px; height: 22px; fill: white; }
+.detalle-texto { display: flex; flex-direction: column; }
+.detalle-label {
+  font-size: 0.75rem;
+  color: #7a8fa6;
+  font-weight: 500;
+}
+.detalle-valor {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f4e79;
+}
 
-/* galería clickeable */
-.gallery-main, .gallery-thumb { cursor: pointer; }
-.gallery-main img, .gallery-thumb img { cursor: pointer; }
+/* ===== SECCIONES ÁREAS / EQUIPO ===== */
+.lista-section { margin: 28px 0; }
+.lista-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f4e79;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e8f0f8;
+}
+.lista-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 16px;
+}
+@media(max-width:600px){ .lista-grid{ grid-template-columns: 1fr 1fr; } }
+
+.lista-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  color: #2d3748;
+  padding: 4px 0;
+}
+.lista-item::before {
+  content: '★';
+  color: #1f4e79;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ===== DESCRIPCIÓN ===== */
+.desc-section { margin: 28px 0; }
+.desc-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f4e79;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e8f0f8;
+}
+.desc-text {
+  color: #4a5568;
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
 </style>
 </head>
 
@@ -161,6 +188,7 @@
 
   <div id="detail-content" style="display:none;">
 
+    <!-- Header -->
     <div class="property-header">
       <div class="property-badge" id="prop-badge">RE/MAX</div>
       <h1 class="property-title" id="prop-title">Propiedad</h1>
@@ -171,25 +199,36 @@
       </div>
     </div>
 
+    <!-- Galería -->
     <div class="gallery-wrap">
       <div class="gallery-grid" id="gallery-grid"></div>
     </div>
 
-    <div class="details-section" id="section-features" style="display:none;">
-      <h3><span class="icon"><img src="img/caracteristicas.png" class="logo-img" alt="Características"></span> Características</h3>
-      <div class="features-grid" id="features-grid"></div>
-    </div>
-
-    <div class="details-section" id="section-desc" style="display:none;">
-      <h3><span class="icon"><img src="img/Descripcion.png" class="logo-img" alt="Descripción"></span> Descripción</h3>
+    <!-- DESCRIPCIÓN -->
+    <div class="desc-section" id="section-desc" style="display:none;">
+      <h2>Descripción</h2>
       <p class="desc-text" id="prop-desc"></p>
     </div>
 
-    <div class="details-section" id="section-bullets" style="display:none;">
-      <h3><span class="icon"><img src="img/equipamiento.png" class="logo-img" alt="Equipamiento"></span> Equipamiento</h3>
-      <ul class="bullets-list" id="bullets-list"></ul>
+    <!-- DETALLES (grid con iconos) -->
+    <div class="details-section" id="section-detalles" style="display:none;">
+      <h2>Detalles</h2>
+      <div class="detalles-grid" id="detalles-grid"></div>
     </div>
 
+    <!-- ÁREAS -->
+    <div class="lista-section" id="section-areas" style="display:none;">
+      <h2>Áreas</h2>
+      <div class="lista-grid" id="areas-grid"></div>
+    </div>
+
+    <!-- EQUIPO / SERVICIOS -->
+    <div class="lista-section" id="section-equipo" style="display:none;">
+      <h2>Equipo</h2>
+      <div class="lista-grid" id="equipo-grid"></div>
+    </div>
+
+    <!-- Mapa + Agente -->
     <div class="location-agent-row">
 
       <div class="map-box">
@@ -242,11 +281,8 @@
 <script>
 const API_BASE = '/api';
 
-/* ============================================================
-   LIGHTBOX — usa variable global, sin JSON en onclick
-   ============================================================ */
-let lbImages = [];
-let lbIndex  = 0;
+/* ===== LIGHTBOX ===== */
+let lbImages = [], lbIndex = 0;
 
 function openLightbox(startIndex) {
   lbIndex = startIndex || 0;
@@ -254,72 +290,57 @@ function openLightbox(startIndex) {
   document.getElementById('lightbox').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
-
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('active');
   document.body.style.overflow = '';
 }
-
 function renderLightbox() {
-  document.getElementById('lightbox-img').src    = lbImages[lbIndex];
-  document.getElementById('lightbox-counter').textContent = `${lbIndex + 1} / ${lbImages.length}`;
-
+  document.getElementById('lightbox-img').src = lbImages[lbIndex];
+  document.getElementById('lightbox-counter').textContent = `${lbIndex+1} / ${lbImages.length}`;
   const thumbsEl = document.getElementById('lightbox-thumbs');
-  thumbsEl.innerHTML = lbImages.map((src, i) =>
-    `<img src="${src}" class="${i === lbIndex ? 'active' : ''}" data-idx="${i}" alt="Foto ${i+1}">`
+  thumbsEl.innerHTML = lbImages.map((src,i) =>
+    `<img src="${src}" class="${i===lbIndex?'active':''}" data-idx="${i}" alt="Foto ${i+1}">`
   ).join('');
-
-  thumbsEl.querySelectorAll('img').forEach(img => {
-    img.addEventListener('click', () => lbGoTo(Number(img.dataset.idx)));
-  });
-
-  const active = thumbsEl.querySelectorAll('img')[lbIndex];
-  if (active) active.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+  thumbsEl.querySelectorAll('img').forEach(img =>
+    img.addEventListener('click', () => lbGoTo(Number(img.dataset.idx)))
+  );
+  const act = thumbsEl.querySelectorAll('img')[lbIndex];
+  if (act) act.scrollIntoView({ inline:'center', behavior:'smooth' });
 }
+function lbGoTo(i)     { lbIndex = i; renderLightbox(); }
+function lightboxNext() { lbIndex = (lbIndex+1) % lbImages.length; renderLightbox(); }
+function lightboxPrev() { lbIndex = (lbIndex-1+lbImages.length) % lbImages.length; renderLightbox(); }
 
-function lbGoTo(i) { lbIndex = i; renderLightbox(); }
-function lightboxNext() { lbIndex = (lbIndex + 1) % lbImages.length; renderLightbox(); }
-function lightboxPrev() { lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length; renderLightbox(); }
-
-// Botones del lightbox
 document.getElementById('lb-close').addEventListener('click', closeLightbox);
 document.getElementById('lb-next').addEventListener('click', lightboxNext);
 document.getElementById('lb-prev').addEventListener('click', lightboxPrev);
-
-// Clic fuera de la imagen cierra
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this) closeLightbox();
-});
-
-// Teclado
+document.getElementById('lightbox').addEventListener('click', function(e){ if(e.target===this) closeLightbox(); });
 document.addEventListener('keydown', e => {
   if (!document.getElementById('lightbox').classList.contains('active')) return;
-  if (e.key === 'ArrowRight') lightboxNext();
-  if (e.key === 'ArrowLeft')  lightboxPrev();
-  if (e.key === 'Escape')     closeLightbox();
+  if (e.key==='ArrowRight') lightboxNext();
+  if (e.key==='ArrowLeft')  lightboxPrev();
+  if (e.key==='Escape')     closeLightbox();
 });
 
 /* ===== NAVBAR SCROLL ===== */
-window.addEventListener('scroll', () => {
-  document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50);
-});
+window.addEventListener('scroll', () =>
+  document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50)
+);
 
 /* ===== HELPERS ===== */
-function getQueryParam(key) {
-  return new URLSearchParams(window.location.search).get(key);
-}
-function formatPrice(price, currency = 'MXN') {
-  const value = Number(price || 0);
-  if (!value) return 'Precio no disponible';
-  return new Intl.NumberFormat('es-MX', { style: 'currency', currency, minimumFractionDigits: 0 }).format(value);
+function getQueryParam(key) { return new URLSearchParams(window.location.search).get(key); }
+function formatPrice(price, currency='MXN') {
+  const v = Number(price||0);
+  if (!v) return 'Precio no disponible';
+  return new Intl.NumberFormat('es-MX',{style:'currency',currency,minimumFractionDigits:0}).format(v);
 }
 function initials(name) {
   if (!name) return '?';
-  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 }
 function operationLabel(op) {
-  if (String(op) === '1') return 'En venta';
-  if (String(op) === '2') return 'En renta';
+  if (String(op)==='1') return 'En venta';
+  if (String(op)==='2') return 'En renta';
   return 'Disponible';
 }
 function buildPropertyTitle(p) {
@@ -330,45 +351,88 @@ function buildPropertyTitle(p) {
   return `${tipo} ${op} en ${zona}`;
 }
 
-/* ===== MAP DATA ===== */
+/* ===== ICONOS SVG para cada detalle ===== */
+const SVG_ICONS = {
+  terreno:     `<svg viewBox="0 0 24 24"><path d="M3 17h18v2H3v-2zm0-4h18v2H3v-2zM3 9h18v2H3V9zm0-4h18v2H3V5z"/></svg>`,
+  construccion:`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`,
+  recamaras:   `<svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>`,
+  banos:       `<svg viewBox="0 0 24 24"><path d="M7 6c0-.55-.45-1-1-1s-1 .45-1 1v5H3v4c0 1.66 1.34 3 3 3v2h2v-2h8v2h2v-2c1.66 0 3-1.34 3-3v-4H7V6zm12 5H9V6c0-1.1.9-2 2-2h5.17C16.67 3.33 17 2.71 17 2c0-1.1-.9-2-2-2s-2 .9-2 2H7c-1.1 0-2 .9-2 2v9H3v2c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3v-2h-2z"/></svg>`,
+  estacionamiento:`<svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>`,
+  cuartoservicio:`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
+  orientacion: `<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+  niveles:     `<svg viewBox="0 0 24 24"><path d="M3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2zm12 4h-4V7h4v2zm0 4h-4v-2h4v2zm0 4h-4v-2h4v2zM9 7v2H7V7h2zm0 4v2H7v-2h2zm0 4v2H7v-2h2z"/></svg>`,
+  conservacion:`<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`,
+  edad:        `<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>`,
+  usosuelo:    `<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`,
+  mantenimiento:`<svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>`,
+  default:     `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`
+};
+
+function iconFor(key) { return SVG_ICONS[key] || SVG_ICONS.default; }
+
+/* ===== MAPEO DE DATOS DEL JSON ===== */
 function mapFromFlyerResponse(json, fallbackId) {
   const root = json?.data || {};
   const p    = root?.propiedad || {};
   const a    = root?.agente   || {};
+  const o    = root?.oficina  || {};
 
   const images = Array.isArray(p.imagenes)
     ? p.imagenes.map(img => img?.path ? `https://cdn.remax.com.mx/${img.path}` : '').filter(Boolean)
     : [];
 
-  const nombreAgente = `${a.nombre || ''} ${a.apellido || ''}`.trim() || 'Agente RE/MAX';
+  const nombreAgente = `${a.nombre||''} ${a.apellido||''}`.trim() || 'Agente RE/MAX';
   const agenteFoto   = a.imagen ? `https://cdn.remax.com.mx/agentes/${a.imagen}` : '';
   const currency     = p.moneda || 'MXN';
-  const price        = currency === 'USD' ? (p.usd_corriente || 0) : (p.mxn_corriente || 0);
+  const price        = currency==='USD' ? (p.usd_corriente||0) : (p.mxn_corriente||0);
 
-  const highlights = [];
-  if (p.clave)                   highlights.push(`Clave: ${p.clave}`);
-  if (p.tipo_nombre)             highlights.push(`Tipo: ${p.tipo_nombre}`);
-  if (p.operacion)               highlights.push(`Operación: ${operationLabel(p.operacion)}`);
-  if (p.m2_terreno)              highlights.push(`Terreno: ${p.m2_terreno} m²`);
-  if (p.m2_construccion)         highlights.push(`Construcción: ${p.m2_construccion} m²`);
-  if (p.numero_estacionamientos) highlights.push(`Estacionamientos: ${p.numero_estacionamientos}`);
+  // ---- Detalles: cada campo del JSON que queremos mostrar ----
+  const detalles = [];
+  if (p.m2_terreno)              detalles.push({ key:'terreno',       label:'Terreno',          valor:`${p.m2_terreno} m²` });
+  if (p.m2_construccion)         detalles.push({ key:'construccion',  label:'Construcción',     valor:`${p.m2_construccion} m²` });
+  if (p.numero_estacionamientos) detalles.push({ key:'estacionamiento',label:'Estacionamiento', valor:`${p.numero_estacionamientos} ${Number(p.numero_estacionamientos)===1?'Cubierto':'Cubiertos'}` });
+  if (p.cuartos)                 detalles.push({ key:'recamaras',     label:'Habitaciones',     valor:`${p.cuartos}` });
+  if (p.banos)                   detalles.push({ key:'banos',         label:'Baños',            valor:`${p.banos}` });
+  if (p.cuarto_servicio!=null)   detalles.push({ key:'cuartoservicio',label:'Cuarto Servicio',  valor: p.cuarto_servicio ? 'Sí' : 'No' });
+  if (p.orientacion)             detalles.push({ key:'orientacion',   label:'Orientación',      valor: p.orientacion });
+  if (p.niveles!=null)           detalles.push({ key:'niveles',       label:'Niveles/Piso',     valor:`${p.niveles}` });
+  if (p.conservacion)            detalles.push({ key:'conservacion',  label:'Conservación',     valor: p.conservacion });
+  if (p.antiguedad!=null)        detalles.push({ key:'edad',          label:'Edad de Propiedad',valor:`${p.antiguedad} años` });
+  if (p.uso_suelo)               detalles.push({ key:'usosuelo',      label:'Uso de Suelo',     valor: p.uso_suelo });
+  if (p.mantenimiento!=null)     detalles.push({ key:'mantenimiento', label:'Mantenimiento',    valor:`$${Number(p.mantenimiento||0).toLocaleString('es-MX')} MXN` });
+  if (p.tipo_nombre)             detalles.push({ key:'usosuelo',      label:'Tipo',             valor: p.tipo_nombre });
+  if (p.operacion)               detalles.push({ key:'default',       label:'Operación',        valor: operationLabel(p.operacion) });
+  if (p.clave)                   detalles.push({ key:'default',       label:'Clave',            valor: p.clave });
+
+  // ---- Áreas (array de strings del JSON) ----
+  const areas = Array.isArray(p.areas)
+    ? p.areas.map(a => typeof a === 'string' ? a : (a?.nombre||'')).filter(Boolean)
+    : [];
+
+  // ---- Equipo / Servicios ----
+  const equipo = Array.isArray(p.servicios)
+    ? p.servicios.map(s => typeof s === 'string' ? s : (s?.nombre||'')).filter(Boolean)
+    : [];
+  // Algunos endpoints lo traen en p.equipamiento
+  const equipamiento = Array.isArray(p.equipamiento)
+    ? p.equipamiento.map(e => typeof e==='string'?e:(e?.nombre||'')).filter(Boolean)
+    : [];
 
   return {
     id:          p.propiedad_id || fallbackId || 1,
     titulo:      buildPropertyTitle(p),
     tipo:        p.tipo_nombre || 'Propiedad',
     estado:      operationLabel(p.operacion),
-    precio:      Number(price || 0),
+    precio:      Number(price||0),
     moneda:      currency,
-    ubicacion:   [p.colonia_nombre, p.ciudad_nombre, p.estado_nombre].filter(Boolean).join(', '),
+    ubicacion:   [p.colonia_nombre, p.ciudad_nombre].filter(Boolean).join(', '),
     ciudad:      [p.ciudad_nombre, p.estado_nombre].filter(Boolean).join(', '),
     lat:         Number(p.latitud)  || 24.0277,
     lng:         Number(p.longitud) || -104.6532,
-    descripcion: p.descripcion || p.notas || '',
-    destacados:  highlights,
-    recamaras:   p.cuartos || null,
-    banos:       p.banos   || null,
-    m2:          p.m2_construccion || p.m2_terreno || null,
+    descripcion: (p.descripcion||p.notas||'').replace(/<[^>]*>/g,''),
+    detalles,
+    areas,
+    equipo:      [...equipo, ...equipamiento],
     imagenes:    images,
     agente: {
       nombre:    nombreAgente,
@@ -382,17 +446,17 @@ function mapFromFlyerResponse(json, fallbackId) {
 
 function mapFromLocalStorage(id) {
   try {
-    const s = JSON.parse(localStorage.getItem('selectedProperty') || 'null');
+    const s = JSON.parse(localStorage.getItem('selectedProperty')||'null');
     if (!s) return null;
     return {
-      id: s.id || s.propiedad_id || id || 1,
-      titulo: s.titulo || 'Propiedad RE/MAX', tipo: s.tipo || 'Propiedad',
-      estado: 'Disponible', precio: Number(s.precio || 0), moneda: 'MXN',
-      ubicacion: s.ubicacion || 'Durango, Dgo', ciudad: s.ubicacion || 'Durango, Dgo',
-      lat: 24.0277, lng: -104.6532, descripcion: '', destacados: [],
-      recamaras: null, banos: null, m2: null,
-      imagenes: s.imagen ? [s.imagen] : [],
-      agente: { nombre: 'Agente RE/MAX', telefono: '618 811 1114', email: '', foto: '', agente_id: null }
+      id: s.id||s.propiedad_id||id||1,
+      titulo: s.titulo||'Propiedad RE/MAX', tipo: s.tipo||'Propiedad',
+      estado:'Disponible', precio:Number(s.precio||0), moneda:'MXN',
+      ubicacion: s.ubicacion||'Durango, Dgo', ciudad:'',
+      lat:24.0277, lng:-104.6532, descripcion:'',
+      detalles:[], areas:[], equipo:[],
+      imagenes: s.imagen?[s.imagen]:[],
+      agente:{ nombre:'Agente RE/MAX', telefono:'618 811 1114', email:'', foto:'', agente_id:null }
     };
   } catch { return null; }
 }
@@ -405,7 +469,7 @@ async function fetchProperty(id) {
       const json = await res.json();
       if (!json?.data?.propiedad) throw new Error('Sin datos');
       return mapFromFlyerResponse(json, id);
-    } catch (err) {
+    } catch(err) {
       console.warn('API no disponible, usando localStorage:', err.message);
     }
   }
@@ -416,82 +480,86 @@ async function fetchProperty(id) {
 function render(prop) {
   const fallback = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
 
-  document.getElementById('bc-title').textContent = prop.titulo || 'Propiedad';
-  document.getElementById('prop-badge').textContent = [prop.tipo, prop.estado].filter(Boolean).join(' · ') || 'RE/MAX';
-  document.getElementById('prop-title').textContent = prop.titulo || 'Propiedad';
+  document.getElementById('bc-title').textContent = prop.titulo||'Propiedad';
+  document.getElementById('prop-badge').textContent = [prop.tipo,prop.estado].filter(Boolean).join(' · ')||'RE/MAX';
+  document.getElementById('prop-title').textContent = prop.titulo||'Propiedad';
 
-  const metas = [];
-  if (prop.ubicacion || prop.ciudad)
-    metas.push(`<span><img src="img/ubicacion.png" class="logo-img"> ${prop.ubicacion || prop.ciudad}</span>`);
-  document.getElementById('prop-meta').innerHTML = metas.join('');
+  // Meta: solo ubicación sin duplicar ciudad
+  const meta = prop.ubicacion || prop.ciudad || '';
+  document.getElementById('prop-meta').innerHTML = meta
+    ? `<span><img src="img/ubicacion.png" class="logo-img"> ${meta}</span>`
+    : '';
+
   document.getElementById('prop-price').textContent = formatPrice(prop.precio, prop.moneda);
   const pl = document.querySelector('.price-label');
-  if (pl) pl.textContent = prop.moneda || 'MXN';
+  if (pl) pl.textContent = prop.moneda||'MXN';
 
-  /* ---- GALERÍA: guarda imágenes en variable global lbImages ---- */
-  const imgs = (prop.imagenes && prop.imagenes.length > 0) ? prop.imagenes : [fallback];
-  lbImages   = imgs;   // ← asigna al array global, SIN JSON en onclick
-
-  const main   = imgs[0] || fallback;
-  const thumb1 = imgs[1] || imgs[0];
-  const thumb2 = imgs[2] || imgs[0];
-  const extra  = Math.max(0, imgs.length - 3);
+  /* ---- GALERÍA ---- */
+  const imgs  = (prop.imagenes&&prop.imagenes.length>0) ? prop.imagenes : [fallback];
+  lbImages    = imgs;
+  const extra = Math.max(0, imgs.length-3);
 
   const galleryEl = document.getElementById('gallery-grid');
   galleryEl.innerHTML = `
     <div class="gallery-main">
-      <img src="${main}" alt="${prop.titulo}" loading="eager" onerror="this.src='${fallback}'">
+      <img src="${imgs[0]}" alt="${prop.titulo}" loading="eager" onerror="this.src='${fallback}'">
     </div>
     <div class="gallery-thumb">
-      <img src="${thumb1}" alt="Foto 2" loading="lazy" onerror="this.src='${fallback}'">
+      <img src="${imgs[1]||imgs[0]}" alt="Foto 2" loading="lazy" onerror="this.src='${fallback}'">
     </div>
     <div class="gallery-thumb" style="position:relative;">
-      <img src="${thumb2}" alt="Foto 3" loading="lazy" onerror="this.src='${fallback}'">
-      ${extra > 0 ? `<div class="gallery-overlay">+${extra} fotos</div>` : ''}
+      <img src="${imgs[2]||imgs[0]}" alt="Foto 3" loading="lazy" onerror="this.src='${fallback}'">
+      ${extra>0?`<div class="gallery-overlay">+${extra} fotos</div>`:''}
     </div>`;
 
-  // Asigna eventos DESPUÉS de insertar el HTML, sin pasar JSON en onclick
-  galleryEl.querySelector('.gallery-main').addEventListener('click', () => openLightbox(0));
-  const thumbEls = galleryEl.querySelectorAll('.gallery-thumb');
-  thumbEls[0]?.addEventListener('click', () => openLightbox(1));
-  thumbEls[1]?.addEventListener('click', () => openLightbox(2));
-  const overlay = galleryEl.querySelector('.gallery-overlay');
-  if (overlay) overlay.addEventListener('click', e => { e.stopPropagation(); openLightbox(2); });
-
-  /* ---- CARACTERÍSTICAS (iconos con nombre correcto) ---- */
-  const features = [];
-  if (prop.recamaras) features.push({ icon: 'img/recamaras.png',  label: `${prop.recamaras} Recámaras`, alt: 'Recámaras' });
-  if (prop.banos)     features.push({ icon: 'img/ba#U00f1os.png', label: `${prop.banos} Baños`,         alt: 'Baños' });
-  if (prop.m2)        features.push({ icon: 'img/tama#U00f1o.png',label: `${prop.m2} m²`,               alt: 'Tamaño' });
-
-  if (features.length > 0) {
-    document.getElementById('features-grid').innerHTML = features.map(f => `
-      <div class="feature-item">
-        <span class="fi-icon"><img src="${f.icon}" class="logo-img" alt="${f.alt}" onerror="this.src='img/terreno.png'"></span>
-        <span>${f.label}</span>
-      </div>`).join('');
-    document.getElementById('section-features').style.display = 'block';
-  }
+  galleryEl.querySelector('.gallery-main').addEventListener('click',()=>openLightbox(0));
+  const ths = galleryEl.querySelectorAll('.gallery-thumb');
+  ths[0]?.addEventListener('click',()=>openLightbox(1));
+  ths[1]?.addEventListener('click',()=>openLightbox(2));
+  galleryEl.querySelector('.gallery-overlay')?.addEventListener('click',e=>{e.stopPropagation();openLightbox(2);});
 
   /* ---- DESCRIPCIÓN ---- */
-  const desc = (prop.descripcion || '').replace(/<[^>]*>/g, '');
-  if (desc) {
-    document.getElementById('prop-desc').textContent = desc;
+  if (prop.descripcion) {
+    document.getElementById('prop-desc').textContent = prop.descripcion;
     document.getElementById('section-desc').style.display = 'block';
   }
 
-  /* ---- DESTACADOS ---- */
-  const bullets = prop.destacados || [];
-  if (bullets.length > 0) {
-    document.getElementById('bullets-list').innerHTML = bullets.map(b => `<li>${b}</li>`).join('');
-    document.getElementById('section-bullets').style.display = 'block';
+  /* ---- DETALLES GRID ---- */
+  if (prop.detalles && prop.detalles.length > 0) {
+    document.getElementById('detalles-grid').innerHTML = prop.detalles.map(d => `
+      <div class="detalle-item">
+        <div class="detalle-icon">${iconFor(d.key)}</div>
+        <div class="detalle-texto">
+          <span class="detalle-label">${d.label}</span>
+          <span class="detalle-valor">${d.valor}</span>
+        </div>
+      </div>`).join('');
+    document.getElementById('section-detalles').style.display = 'block';
   }
 
-  /* ---- MAPA ---- */
-  const lat = prop.lat || 24.0277;
-  const lng = prop.lng || -104.6532;
+  /* ---- ÁREAS ---- */
+  if (prop.areas && prop.areas.length > 0) {
+    document.getElementById('areas-grid').innerHTML = prop.areas.map(a =>
+      `<div class="lista-item">${a}</div>`
+    ).join('');
+    document.getElementById('section-areas').style.display = 'block';
+  }
+
+  /* ---- EQUIPO ---- */
+  if (prop.equipo && prop.equipo.length > 0) {
+    document.getElementById('equipo-grid').innerHTML = prop.equipo.map(e =>
+      `<div class="lista-item">${e}</div>`
+    ).join('');
+    document.getElementById('section-equipo').style.display = 'block';
+  }
+
+  /* ---- MAPA (sin duplicar ciudad) ---- */
+  const lat      = prop.lat || 24.0277;
+  const lng      = prop.lng || -104.6532;
+  // Solo muestra la dirección más específica disponible, sin repetir
+  const addrText = prop.ubicacion || prop.ciudad || 'Durango, Dgo';
   document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
-  document.getElementById('map-address-text').textContent = [prop.ubicacion, prop.ciudad].filter(Boolean).join(', ') || 'Durango, Dgo';
+  document.getElementById('map-address-text').textContent = addrText;
   document.getElementById('btn-maps').href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 
   /* ---- AGENTE ---- */
@@ -510,8 +578,8 @@ function render(prop) {
   }
 
   const contacts = [];
-  if (telefono) contacts.push({ icon: 'img/telefono.png', value: telefono, href: `tel:${telefono.replace(/\s/g,'')}` });
-  if (email)    contacts.push({ icon: 'img/email.png',    value: email,    href: `mailto:${email}` });
+  if (telefono) contacts.push({ icon:'img/telefono.png', value:telefono, href:`tel:${telefono.replace(/\s/g,'')}` });
+  if (email)    contacts.push({ icon:'img/email.png',    value:email,    href:`mailto:${email}` });
 
   document.getElementById('agent-contacts').innerHTML = contacts.map(c => `
     <div class="agent-contact-item">
@@ -520,11 +588,11 @@ function render(prop) {
     </div>`).join('');
 
   const ctaHref = telefono
-    ? `https://wa.me/${telefono.replace(/\D/g,'')}?text=Hola, me interesa la propiedad: ${encodeURIComponent(prop.titulo || '')}`
-    : (email ? `mailto:${email}` : '#');
+    ? `https://wa.me/${telefono.replace(/\D/g,'')}?text=Hola, me interesa la propiedad: ${encodeURIComponent(prop.titulo||'')}`
+    : (email?`mailto:${email}`:'#');
 
   document.getElementById('btn-contact').onclick = () => {
-    if (ctaHref !== '#') window.open(ctaHref, '_blank');
+    if (ctaHref!=='#') window.open(ctaHref,'_blank');
   };
 }
 
@@ -541,7 +609,7 @@ async function init() {
     render(property);
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('detail-content').style.display = 'block';
-  } catch (err) {
+  } catch(err) {
     console.error(err);
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('error-screen').style.display   = 'block';
