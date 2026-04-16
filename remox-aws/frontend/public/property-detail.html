@@ -260,9 +260,9 @@
       <div class="lista-grid" id="areas-grid"></div>
     </div>
 
-    <!-- EQUIPO / SERVICIOS -->
+    <!-- EQUIPAMIENTO -->
     <div class="lista-section" id="section-equipo" style="display:none;">
-      <h2>Equipo</h2>
+      <h2>Equipamiento</h2>
       <div class="lista-grid" id="equipo-grid"></div>
     </div>
 
@@ -438,7 +438,6 @@ function mapFromFlyerResponse(json, fallbackId) {
   if (p.uso_suelo)               detalles.push({ key:'usosuelo',      label:'Uso de Suelo',     valor: p.uso_suelo });
   if (p.mantenimiento!=null)     detalles.push({ key:'mantenimiento', label:'Mantenimiento',    valor:`$${Number(p.mantenimiento||0).toLocaleString('es-MX')} MXN` });
   if (p.tipo_nombre)             detalles.push({ key:'usosuelo',      label:'Tipo',             valor: p.tipo_nombre });
-  if (p.operacion)               detalles.push({ key:'default',       label:'Operación',        valor: operationLabel(p.operacion) });
   if (p.clave)                   detalles.push({ key:'default',       label:'Clave',            valor: p.clave });
 
   // ---- Áreas (array de strings del JSON) ----
@@ -455,6 +454,20 @@ function mapFromFlyerResponse(json, fallbackId) {
     ? p.equipamiento.map(e => typeof e==='string'?e:(e?.nombre||'')).filter(Boolean)
     : [];
 
+  // ---- Equipamiento desde datos.equipos (FetchPropiedadFlyerData) ----
+  const datosEquipos = Array.isArray(root?.datos?.equipos)
+    ? root.datos.equipos
+        .filter(e => e.value && e.value !== '0' && e.value !== '' && e.datos)
+        .map(e => e.datos)
+    : [];
+
+  // ---- Áreas desde datos.areas ----
+  const datosAreas = Array.isArray(root?.datos?.areas)
+    ? root.datos.areas
+        .filter(a => a.value && a.value !== '0' && a.value !== '' && a.datos)
+        .map(a => a.datos)
+    : [];
+
   return {
     id:          p.propiedad_id || fallbackId || 1,
     titulo:      buildPropertyTitle(p),
@@ -468,8 +481,8 @@ function mapFromFlyerResponse(json, fallbackId) {
     lng:         Number(p.longitud) || -104.6532,
     descripcion: (p.descripcion||p.notas||'').replace(/<[^>]*>/g,''),
     detalles,
-    areas,
-    equipo:      [...equipo, ...equipamiento],
+    areas:       [...new Set([...areas, ...datosAreas])],
+    equipo:      [...new Set([...equipo, ...equipamiento, ...datosEquipos])],
     imagenes:    images,
     agente: {
       nombre:    nombreAgente,
