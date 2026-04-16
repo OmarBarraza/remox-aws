@@ -758,29 +758,21 @@ async function init() {
         return {
           ...p,
           operacion:        p.operacion        || raw.operacion        || '1',
-          propuesta:        raw.propuesta       ?? null,
-          m2_terreno:       p.m2_terreno        || raw.m2_terreno       || null,
-          m2_construccion:  p.m2_construccion   || raw.m2_construccion  || null,
-          cuartos:          p.cuartos           || raw.cuartos          || null,
-          banos:            p.banos             || raw.banos            || null,
-          estacionamientos: p.estacionamientos  || raw.estacionamientos || null,
+          propuesta:        raw.propuesta       ?? p.propuesta ?? null,
+          // Usar el valor de p primero (ya viene del backend), raw como fallback
+          m2_terreno:       p.m2_terreno        != null ? p.m2_terreno       : (raw.m2_terreno       || null),
+          m2_construccion:  p.m2_construccion   != null ? p.m2_construccion  : (raw.m2_construccion  || null),
+          cuartos:          p.cuartos           != null ? p.cuartos          : (raw.cuartos          || null),
+          banos:            p.banos             != null ? p.banos            : (raw.banos            || null),
+          estacionamientos: p.estacionamientos  != null ? p.estacionamientos : (raw.estacionamientos || null),
         };
       });
-      // DEBUG raw: ver si vienen los campos
-      if (data.raw.data.prop_data.length > 0) {
-        const sample = data.raw.data.prop_data[0];
-        console.log('RAW prop_data campos:', Object.keys(sample));
-        console.log('RAW ejemplo:', sample);
-      }
+
     }
 
     allProps = props;
     filtered = [...allProps];
-    // DEBUG: ver campos de una propiedad (quitar después)
-    if (props.length > 0) {
-      console.log('Campos de propiedad:', Object.keys(props[0]));
-      console.log('Ejemplo:', props[0]);
-    }
+
 
     // Leer parámetros de URL (vienen de botones crédito del index)
     const params  = new URLSearchParams(window.location.search);
