@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     /* Logo más grande sin afectar navbar */
-    .nav-logo .logo-img { height: 75px; }
+    .nav-logo .logo-img { height: 70px; }
 
     /* Etiquetas de operación en cards */
     .property-image-wrap { position: relative; }
@@ -223,7 +223,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .status-propuesta { background: #d97706; }
+    .status-propuesta { background: #F5CF0B; color: #5a4000; }
     .status-proceso   { background: #ea580c; }
 
     /* Footer siempre abajo */
@@ -431,7 +431,7 @@
       if (String(propuesta) === '0') {
         statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
       } else if (String(propuesta) === '1') {
-        statusBadge = '<span class="status-badge status-proceso">En proceso</span>';
+        statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
       }
     }
 
