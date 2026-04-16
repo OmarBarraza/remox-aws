@@ -517,10 +517,10 @@ function buildCard(p) {
   const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
   const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
   let statusBadge = '';
-  if (p.propuesta !== null && p.propuesta !== undefined && p.propuesta !== '') {
-    if (String(p.propuesta) === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
-    else if (String(p.propuesta) === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
-  }
+  const _prop = String(p.propuesta ?? '');
+  if (_prop === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
+  else if (_prop === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
+  // Cualquier otro valor (null, undefined, '', '2', etc.) → sin badge
   return `
   <div class="property-card" onclick='goToDetail(${JSON.stringify(p)})'>
     <div class="property-image-wrap">
@@ -637,28 +637,28 @@ function buscar() {
     if (operacion && String(p.operacion) !== operacion) return false;
 
     // --- Cuartos ---
+    // Si se filtra por cuartos, la propiedad DEBE tener ese campo con valor
     if (cuartos) {
       const c = Number(p.cuartos || p.recamaras || 0);
-      if (!c) return false;
-      // 5+ = 5 o más; resto = comparación >= para ser más flexible
+      if (!c) return false; // sin dato de cuartos → excluir
       if (cuartos === '5') { if (c < 5) return false; }
-      else if (c < Number(cuartos)) return false; // >= en lugar de ===
+      else if (c !== Number(cuartos)) return false;
     }
 
     // --- Baños ---
     if (banos) {
       const b = Number(p.banos || 0);
-      if (!b) return false;
+      if (!b) return false; // sin dato de baños → excluir
       if (banos === '4') { if (b < 4) return false; }
-      else if (b < Number(banos)) return false; // >= en lugar de ===
+      else if (b !== Number(banos)) return false;
     }
 
     // --- Estacionamientos ---
     if (estac) {
       const e = Number(p.estacionamientos || p.numero_estacionamientos || 0);
-      if (!e) return false;
+      if (!e) return false; // sin dato → excluir
       if (estac === '4') { if (e < 4) return false; }
-      else if (e < Number(estac)) return false; // >= en lugar de ===
+      else if (e !== Number(estac)) return false;
     }
 
     // --- Terreno ---
@@ -743,36 +743,16 @@ async function init() {
     if (data.raw?.data?.prop_data) {
       const rawMap = {};
       data.raw.data.prop_data.forEach(r => {
-        rawMap[r.propiedad_id] = {
-          operacion:       r.operacion,
-          propuesta:       r.propuesta ?? null,
-          m2_terreno:      r.m2_terreno      || r.m2_terreno_     || null,
-          m2_construccion: r.m2_construccion || null,
-          cuartos:         r.cuartos         || r.numero_recamaras || null,
-          banos:           r.banos           || null,
-          estacionamientos: r.numero_estacionamientos || r.estacionamientos || null,
-        };
+        rawMap[r.propiedad_id] = { operacion: r.operacion, propuesta: 'propuesta' in r ? r.propuesta : undefined };
       });
       props = props.map(p => {
         const raw = rawMap[p.propiedad_id] || rawMap[p.id] || {};
-        return {
-          ...p,
-          operacion:        p.operacion        || raw.operacion        || '1',
-          propuesta:        raw.propuesta       ?? p.propuesta ?? null,
-          // Usar el valor de p primero (ya viene del backend), raw como fallback
-          m2_terreno:       p.m2_terreno        != null ? p.m2_terreno       : (raw.m2_terreno       || null),
-          m2_construccion:  p.m2_construccion   != null ? p.m2_construccion  : (raw.m2_construccion  || null),
-          cuartos:          p.cuartos           != null ? p.cuartos          : (raw.cuartos          || null),
-          banos:            p.banos             != null ? p.banos            : (raw.banos            || null),
-          estacionamientos: p.estacionamientos  != null ? p.estacionamientos : (raw.estacionamientos || null),
-        };
+        return { ...p, operacion: p.operacion || raw.operacion || '1', propuesta: 'propuesta' in raw ? raw.propuesta : p.propuesta };
       });
-
     }
 
     allProps = props;
     filtered = [...allProps];
-
 
     // Leer parámetros de URL (vienen de botones crédito del index)
     const params  = new URLSearchParams(window.location.search);
