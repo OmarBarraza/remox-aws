@@ -497,6 +497,7 @@
   <p class="footer-copy">Remax Victoria. Todos los derechos reservados ©</p>
 </footer>
 
+
 <script>
 const API_BASE = '/api';
 const PAGE_SIZE = 12;
@@ -661,21 +662,28 @@ function buscar() {
     }
 
     // --- Terreno ---
-    // Solo aplica si el usuario llenó algún campo de terreno
     if (filtrarTerreno) {
       const t = Number(p.m2_terreno || 0);
-      if (!t) return false; // sin dato de terreno → excluir (no son terrenos)
+      if (!t) return false; // sin terreno → excluir
       if (t < terrenoMin) return false;
       if (terrenoMax < Infinity && t > terrenoMax) return false;
+      // Si SOLO se filtró terreno (sin construcción), mostrar solo propiedades sin construcción (terrenos puros)
+      if (!filtrarConst) {
+        const c = Number(p.m2_construccion || 0);
+        if (c > 0) return false;
+      }
     }
 
     // --- Construcción ---
-    // Solo aplica si el usuario llenó algún campo de construcción
     if (filtrarConst) {
       const c = Number(p.m2_construccion || 0);
-      if (!c) return false; // sin dato de construcción → excluir
+      if (!c) return false; // sin construcción → excluir
       if (c < constMin) return false;
       if (constMax < Infinity && c > constMax) return false;
+      // Si SOLO se filtró construcción (sin terreno), mostrar solo propiedades con construcción
+      if (!filtrarTerreno) {
+        if (!c) return false;
+      }
     }
 
     return true;
