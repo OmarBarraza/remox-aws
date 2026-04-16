@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .nav-logo .logo-img { height: 55px; }
+    .nav-logo .logo-img { height: 70px; }
     /* Navbar siempre azul en esta vista */
     .navbar { background: #0B2742 !important; }
     /* Grid 3 columnas desktop */
@@ -254,9 +254,9 @@
       padding: 24px;
       gap: 24px;
     }
-    .filtros-extra.open { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .filtros-extra.open { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); overflow: hidden; }
 
-    .filtro-extra-grupo { display: flex; flex-direction: column; gap: 8px; }
+    .filtro-extra-grupo { display: flex; flex-direction: column; gap: 8px; min-width: 0; overflow: hidden; }
     .filtro-extra-grupo > label {
       font-size: 0.72rem;
       font-weight: 700;
@@ -286,18 +286,21 @@
     .desde-hasta {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
     }
     .desde-hasta input {
-      padding: 9px 12px;
+      padding: 8px 8px;
       border: 1.5px solid #e2e8f0;
       border-radius: 10px;
       font-family: 'Poppins', sans-serif;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       color: #2d3748;
       outline: none;
       background: white;
       transition: border-color 0.2s;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .desde-hasta input:focus { border-color: #1f4e79; }
     .desde-hasta input::placeholder { color: #a0aec0; font-size: 0.82rem; }
@@ -327,7 +330,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .status-propuesta { background: #d97706; }
+    .status-propuesta { background: #F5CF0B; color: #5a4000; }
     .status-proceso   { background: #ea580c; }
   </style>
 </head>
@@ -522,7 +525,7 @@ function buildCard(p) {
   let statusBadge = '';
   if (p.propuesta !== null && p.propuesta !== undefined && p.propuesta !== '') {
     if (String(p.propuesta) === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
-    else if (String(p.propuesta) === '1') statusBadge = '<span class="status-badge status-proceso">En proceso</span>';
+    else if (String(p.propuesta) === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
   }
   return `
   <div class="property-card" onclick='goToDetail(${JSON.stringify(p)})'>
