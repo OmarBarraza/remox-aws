@@ -394,10 +394,10 @@
   </div>
 </div>
 
-<script src="app.js"></script>
-<script src="https://elfsightcdn.com/platform.js" async></script>
+<!-- Variables globales necesarias ANTES de app.js -->
 <script>
-  /* ===== FILTROS DE CRÉDITO (botones hero) ===== */
+  const FALLBACK_IMG = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
+
   const creditoFiltros = {
     bancario:  { precioMax: 5000000 },
     fovissste: { precioMax: 3000000 },
@@ -410,26 +410,32 @@
     infonavit: { nombre: 'INFONAVIT',          msg: 'Se muestran propiedades en venta disponibles para adquirir con crédito INFONAVIT (hasta $2,000,000 MXN).' },
   };
 
-  function filtrarCredito(tipo) {
-    const f = creditoFiltros[tipo];
-    window.location.href = `propiedades.html?credito=${tipo}&maxPrecio=${f.precioMax}&operacion=1`;
-  }
-  window.filtrarCredito = filtrarCredito;
-  window.cerrarCreditoPopup = cerrarCreditoPopup;
+  let _creditoTipoActual = null;
 
-  /* ===== HELPERS COMPARTIDOS ===== */
-  const FALLBACK_IMG = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
+  function filtrarCredito(tipo) {
+    _creditoTipoActual = tipo;
+    const label = creditoLabels[tipo];
+    document.getElementById('popup-tipo').textContent    = label.nombre;
+    document.getElementById('popup-titulo').textContent  = 'Mostrando propiedades disponibles';
+    document.getElementById('popup-msg').textContent     = label.msg;
+    document.getElementById('creditoPopup').classList.add('active');
+  }
+
+  function cerrarCreditoPopup() {
+    document.getElementById('creditoPopup').classList.remove('active');
+    if (_creditoTipoActual) {
+      const f = creditoFiltros[_creditoTipoActual];
+      window.location.href = `propiedades.html?credito=${_creditoTipoActual}&maxPrecio=${f.precioMax}&operacion=1`;
+    }
+  }
 
   function buildCard(p) {
     const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
     const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
-
-    // Badge propuesta/proceso: solo si el campo existe con valor "0" o "1"
-    let statusBadge = '';
     const _prop = String(p.propuesta ?? '');
+    let statusBadge = '';
     if (_prop === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
     else if (_prop === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
-
     return `
     <div class="property-card" onclick='selectProperty(${JSON.stringify(p)})'>
       <div class="property-image-wrap">
@@ -451,19 +457,26 @@
     </div>`;
   }
 
+  function selectProperty(property) {
+    const id = property?.propiedad_id || property?.id || '';
+    if (id) window.location.href = `property-detail.html?id=${encodeURIComponent(id)}`;
+    else    window.location.href = 'property-detail.html';
+  }
+</script>
+
+<script src="app.js"></script>
+<script src="https://elfsightcdn.com/platform.js" async></script>
+
+<script>
   /* ===== FILTROS ===== */
   function applyFilters(maxPrecioOverride) {
     if (!window.allProperties || !window.allProperties.length) return;
-
     let filtered = [...window.allProperties];
-
     const location  = (document.getElementById('searchLocation')?.value || '').toLowerCase();
     const price     = document.getElementById('priceRange')?.value || '';
     const category  = document.getElementById('category')?.value || '';
     const operacion = document.getElementById('operacion')?.value || '';
-
     if (location)  filtered = filtered.filter(p => (p.ubicacion||'').toLowerCase().includes(location));
-
     if (maxPrecioOverride) {
       filtered = filtered.filter(p => p.precio <= maxPrecioOverride);
     } else if (price) {
@@ -474,26 +487,20 @@
         return true;
       });
     }
-
     if (category)  filtered = filtered.filter(p => (p.tipo||'').toLowerCase().includes(category));
     if (operacion) filtered = filtered.filter(p => String(p.operacion) === operacion);
-
     renderProperties(filtered);
   }
 
-  /* ===== RENDER — solo 9, con botón Ver más ===== */
   function renderProperties(properties) {
     const results = document.getElementById('results');
     if (!results) return;
-
     if (!properties.length) {
       results.innerHTML = '<p style="padding:20px;color:#666;">No hay propiedades que coincidan.</p>';
       return;
     }
-
-    const primeras9  = properties.slice(0, 12);
-    const hayMas     = properties.length > 12;
-
+    const primeras9 = properties.slice(0, 9);
+    const hayMas    = properties.length > 9;
     results.innerHTML = `
       <div class="property-grid">
         ${primeras9.map(buildCard).join('')}
@@ -511,12 +518,6 @@
       </div>` : ''}`;
   }
 
-  function selectProperty(property) {
-    const id = property?.propiedad_id || property?.id || '';
-    if (id) window.location.href = `property-detail.html?id=${encodeURIComponent(id)}`;
-    else    window.location.href = 'property-detail.html';
-  }
-
   /* ===== NAVBAR SCROLL ===== */
   window.addEventListener('scroll', () =>
     document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50)
@@ -528,7 +529,6 @@
   if (menuToggle) {
     menuToggle.addEventListener('click', () => navMenu.classList.toggle('active'));
   }
-  // Dropdowns en mobile: click para abrir
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', function(e) {
       if (window.innerWidth <= 768) {
@@ -537,10 +537,8 @@
       }
     });
   });
-  // Cerrar popup crédito con ESC
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') cerrarCreditoPopup();
   });
 </script>
 </body>
-</html>
