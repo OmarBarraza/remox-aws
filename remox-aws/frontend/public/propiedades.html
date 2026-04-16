@@ -664,25 +664,26 @@ function buscar() {
     // --- Terreno ---
     if (filtrarTerreno) {
       const t = Number(p.m2_terreno || 0);
-      // Sin dato de terreno → excluir
-      if (!t) return false;
-      // Fuera del rango mínimo
-      if (terrenoMin > 0 && t < terrenoMin) return false;
-      // Fuera del rango máximo
+      if (!t) return false; // sin terreno → excluir
+      if (t < terrenoMin) return false;
       if (terrenoMax < Infinity && t > terrenoMax) return false;
-      // Solo terreno (sin construcción) → solo terrenos puros sin m2 construidos
-      if (!filtrarConst && Number(p.m2_construccion || 0) > 0) return false;
+      // Si SOLO se filtró terreno (sin construcción), mostrar solo propiedades sin construcción (terrenos puros)
+      if (!filtrarConst) {
+        const c = Number(p.m2_construccion || 0);
+        if (c > 0) return false;
+      }
     }
 
     // --- Construcción ---
     if (filtrarConst) {
       const c = Number(p.m2_construccion || 0);
-      // Sin dato de construcción → excluir
-      if (!c) return false;
-      // Fuera del rango mínimo
-      if (constMin > 0 && c < constMin) return false;
-      // Fuera del rango máximo
+      if (!c) return false; // sin construcción → excluir
+      if (c < constMin) return false;
       if (constMax < Infinity && c > constMax) return false;
+      // Si SOLO se filtró construcción (sin terreno), mostrar solo propiedades con construcción
+      if (!filtrarTerreno) {
+        if (!c) return false;
+      }
     }
 
     return true;
@@ -742,16 +743,44 @@ async function init() {
     if (data.raw?.data?.prop_data) {
       const rawMap = {};
       data.raw.data.prop_data.forEach(r => {
-        rawMap[r.propiedad_id] = { operacion: r.operacion, propuesta: r.propuesta ?? null };
+        rawMap[r.propiedad_id] = {
+          operacion:       r.operacion,
+          propuesta:       r.propuesta ?? null,
+          m2_terreno:      r.m2_terreno      || r.m2_terreno_     || null,
+          m2_construccion: r.m2_construccion || null,
+          cuartos:         r.cuartos         || r.numero_recamaras || null,
+          banos:           r.banos           || null,
+          estacionamientos: r.numero_estacionamientos || r.estacionamientos || null,
+        };
       });
       props = props.map(p => {
         const raw = rawMap[p.propiedad_id] || rawMap[p.id] || {};
-        return { ...p, operacion: p.operacion || raw.operacion || '1', propuesta: raw.propuesta ?? null };
+        return {
+          ...p,
+          operacion:        p.operacion        || raw.operacion        || '1',
+          propuesta:        raw.propuesta       ?? null,
+          m2_terreno:       p.m2_terreno        || raw.m2_terreno       || null,
+          m2_construccion:  p.m2_construccion   || raw.m2_construccion  || null,
+          cuartos:          p.cuartos           || raw.cuartos          || null,
+          banos:            p.banos             || raw.banos            || null,
+          estacionamientos: p.estacionamientos  || raw.estacionamientos || null,
+        };
       });
+      // DEBUG raw: ver si vienen los campos
+      if (data.raw.data.prop_data.length > 0) {
+        const sample = data.raw.data.prop_data[0];
+        console.log('RAW prop_data campos:', Object.keys(sample));
+        console.log('RAW ejemplo:', sample);
+      }
     }
 
     allProps = props;
     filtered = [...allProps];
+    // DEBUG: ver campos de una propiedad (quitar después)
+    if (props.length > 0) {
+      console.log('Campos de propiedad:', Object.keys(props[0]));
+      console.log('Ejemplo:', props[0]);
+    }
 
     // Leer parámetros de URL (vienen de botones crédito del index)
     const params  = new URLSearchParams(window.location.search);
