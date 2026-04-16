@@ -93,24 +93,36 @@
 .lista-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px 16px;
+  gap: 18px 24px;
 }
-@media(max-width:600px){ .lista-grid{ grid-template-columns: 1fr 1fr; } }
+@media(max-width: 768px){ .lista-grid{ grid-template-columns: repeat(2,1fr); } }
+@media(max-width: 480px){ .lista-grid{ grid-template-columns: 1fr; } }
 
+/* Mismo estilo que detalle-item */
 .lista-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.92rem;
-  color: #2d3748;
-  padding: 4px 0;
-}
-.lista-item::before {
-  content: '★';
+  gap: 14px;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  font-size: 0.95rem;
+  font-weight: 600;
   color: #1f4e79;
-  font-size: 0.75rem;
+}
+.lista-item::before { content: none; }
+.lista-item-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #1f4e79;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
+.lista-item-icon svg { width: 22px; height: 22px; fill: white; }
 
 /* ===== DESCRIPCIÓN ===== */
 .desc-section { margin: 28px 0; }
@@ -590,7 +602,10 @@ function render(prop) {
   /* ---- ÁREAS ---- */
   if (prop.areas && prop.areas.length > 0) {
     document.getElementById('areas-grid').innerHTML = prop.areas.map(a =>
-      `<div class="lista-item">${a}</div>`
+      `<div class="lista-item">
+        <div class="lista-item-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+        <span>${a}</span>
+      </div>`
     ).join('');
     document.getElementById('section-areas').style.display = 'block';
   }
@@ -598,7 +613,10 @@ function render(prop) {
   /* ---- EQUIPO ---- */
   if (prop.equipo && prop.equipo.length > 0) {
     document.getElementById('equipo-grid').innerHTML = prop.equipo.map(e =>
-      `<div class="lista-item">${e}</div>`
+      `<div class="lista-item">
+        <div class="lista-item-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div>
+        <span>${e}</span>
+      </div>`
     ).join('');
     document.getElementById('section-equipo').style.display = 'block';
   }
