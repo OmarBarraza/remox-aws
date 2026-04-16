@@ -664,26 +664,25 @@ function buscar() {
     // --- Terreno ---
     if (filtrarTerreno) {
       const t = Number(p.m2_terreno || 0);
-      if (!t) return false; // sin terreno → excluir
-      if (t < terrenoMin) return false;
+      // Sin dato de terreno → excluir
+      if (!t) return false;
+      // Fuera del rango mínimo
+      if (terrenoMin > 0 && t < terrenoMin) return false;
+      // Fuera del rango máximo
       if (terrenoMax < Infinity && t > terrenoMax) return false;
-      // Si SOLO se filtró terreno (sin construcción), mostrar solo propiedades sin construcción (terrenos puros)
-      if (!filtrarConst) {
-        const c = Number(p.m2_construccion || 0);
-        if (c > 0) return false;
-      }
+      // Solo terreno (sin construcción) → solo terrenos puros sin m2 construidos
+      if (!filtrarConst && Number(p.m2_construccion || 0) > 0) return false;
     }
 
     // --- Construcción ---
     if (filtrarConst) {
       const c = Number(p.m2_construccion || 0);
-      if (!c) return false; // sin construcción → excluir
-      if (c < constMin) return false;
+      // Sin dato de construcción → excluir
+      if (!c) return false;
+      // Fuera del rango mínimo
+      if (constMin > 0 && c < constMin) return false;
+      // Fuera del rango máximo
       if (constMax < Infinity && c > constMax) return false;
-      // Si SOLO se filtró construcción (sin terreno), mostrar solo propiedades con construcción
-      if (!filtrarTerreno) {
-        if (!c) return false;
-      }
     }
 
     return true;
