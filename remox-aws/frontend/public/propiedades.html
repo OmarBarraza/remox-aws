@@ -594,15 +594,14 @@ function goPage(n) {
 
 /* ===== FILTRAR ===== */
 function buscar() {
-  const ubicacion  = (document.getElementById('f-ubicacion').value || '').toLowerCase().trim();
-  const precio     = document.getElementById('f-precio').value;
-  const tipo       = document.getElementById('f-tipo').value;
-  const operacion  = document.getElementById('f-operacion').value;
-  const cuartos    = document.getElementById('f-cuartos').value;
-  const banos      = document.getElementById('f-banos').value;
-  const estac      = document.getElementById('f-estacionamientos').value;
+  const ubicacion = (document.getElementById('f-ubicacion').value || '').toLowerCase().trim();
+  const precio    = document.getElementById('f-precio').value;
+  const tipo      = document.getElementById('f-tipo').value;
+  const operacion = document.getElementById('f-operacion').value;
+  const cuartos   = document.getElementById('f-cuartos').value;
+  const banos     = document.getElementById('f-banos').value;
+  const estac     = document.getElementById('f-estacionamientos').value;
 
-  // Tamaño — solo activo si el campo tiene valor
   const terrenoMinRaw = document.getElementById('f-terreno-min').value.trim();
   const terrenoMaxRaw = document.getElementById('f-terreno-max').value.trim();
   const constMinRaw   = document.getElementById('f-const-min').value.trim();
@@ -611,79 +610,72 @@ function buscar() {
   const filtrarTerreno = terrenoMinRaw !== '' || terrenoMaxRaw !== '';
   const filtrarConst   = constMinRaw   !== '' || constMaxRaw   !== '';
 
-  const terrenoMin = terrenoMinRaw !== '' ? Number(terrenoMinRaw) : 0;
-  const terrenoMax = terrenoMaxRaw !== '' ? Number(terrenoMaxRaw) : Infinity;
-  const constMin   = constMinRaw   !== '' ? Number(constMinRaw)   : 0;
-  const constMax   = constMaxRaw   !== '' ? Number(constMaxRaw)   : Infinity;
+  // Usar -Infinity/Infinity para que la comparación siempre pase cuando no hay valor
+  const terrenoMin = terrenoMinRaw !== '' ? Number(terrenoMinRaw) : -Infinity;
+  const terrenoMax = terrenoMaxRaw !== '' ? Number(terrenoMaxRaw) :  Infinity;
+  const constMin   = constMinRaw   !== '' ? Number(constMinRaw)   : -Infinity;
+  const constMax   = constMaxRaw   !== '' ? Number(constMaxRaw)   :  Infinity;
 
   filtered = allProps.filter(p => {
 
     // --- Ubicación ---
-    if (ubicacion && !(p.ubicacion||'').toLowerCase().includes(ubicacion)) return false;
+    if (ubicacion && !(p.ubicacion || '').toLowerCase().includes(ubicacion)) return false;
 
     // --- Precio ---
     if (precio) {
       const v = Number(p.precio || 0);
-      if (precio === '0-1' && !(v >= 0       && v < 1000000))  return false;
-      if (precio === '1-2' && !(v >= 1000000 && v < 2000000))  return false;
-      if (precio === '2-3' && !(v >= 2000000 && v < 3000000))  return false;
-      if (precio === '3+'  && !(v >= 3000000))                  return false;
+      if (precio === '0-1' && !(v >= 0       && v < 1000000)) return false;
+      if (precio === '1-2' && !(v >= 1000000 && v < 2000000)) return false;
+      if (precio === '2-3' && !(v >= 2000000 && v < 3000000)) return false;
+      if (precio === '3+'  && !(v >= 3000000))                 return false;
     }
 
     // --- Tipo ---
-    if (tipo && !(p.tipo||'').toLowerCase().includes(tipo)) return false;
+    if (tipo && !(p.tipo || '').toLowerCase().includes(tipo)) return false;
 
     // --- Operación ---
     if (operacion && String(p.operacion) !== operacion) return false;
 
     // --- Cuartos ---
-    // Si se filtra por cuartos, la propiedad DEBE tener ese campo con valor
+    // Math.round para tolerar "2.0" → 2
     if (cuartos) {
-      const c = Number(p.cuartos || p.recamaras || 0);
-      if (!c) return false; // sin dato de cuartos → excluir
+      const c = Math.round(Number(p.cuartos || p.recamaras || 0));
+      if (!c) return false;
       if (cuartos === '5') { if (c < 5) return false; }
       else if (c !== Number(cuartos)) return false;
     }
 
     // --- Baños ---
+    // Math.abs con tolerancia 0.01 para tolerar "1.0" vs "1", "2.5" vs "2.5"
     if (banos) {
       const b = Number(p.banos || 0);
-      if (!b) return false; // sin dato de baños → excluir
+      if (!b) return false;
       if (banos === '4') { if (b < 4) return false; }
-      else if (b !== Number(banos)) return false;
+      else if (Math.abs(b - Number(banos)) > 0.01) return false;
     }
 
     // --- Estacionamientos ---
     if (estac) {
       const e = Number(p.estacionamientos || p.numero_estacionamientos || 0);
-      if (!e) return false; // sin dato → excluir
+      if (!e) return false;
       if (estac === '4') { if (e < 4) return false; }
-      else if (e !== Number(estac)) return false;
+      else if (Math.round(e) !== Number(estac)) return false;
     }
 
     // --- Terreno ---
     if (filtrarTerreno) {
       const t = Number(p.m2_terreno || 0);
-      if (!t) return false; // sin terreno → excluir
-      if (t < terrenoMin) return false;
-      if (terrenoMax < Infinity && t > terrenoMax) return false;
-      // Si SOLO se filtró terreno (sin construcción), mostrar solo propiedades sin construcción (terrenos puros)
-      if (!filtrarConst) {
-        const c = Number(p.m2_construccion || 0);
-        if (c > 0) return false;
-      }
+      if (!t) return false;
+      if (t < terrenoMin || t > terrenoMax) return false;
+      // Solo terreno (sin construcción) → terrenos puros sin m2 construidos
+      if (!filtrarConst && Number(p.m2_construccion || 0) > 0) return false;
     }
 
     // --- Construcción ---
     if (filtrarConst) {
       const c = Number(p.m2_construccion || 0);
-      if (!c) return false; // sin construcción → excluir
-      if (c < constMin) return false;
-      if (constMax < Infinity && c > constMax) return false;
-      // Si SOLO se filtró construcción (sin terreno), mostrar solo propiedades con construcción
-      if (!filtrarTerreno) {
-        if (!c) return false;
-      }
+      if (!c) return false;
+      if (c < constMin || c > constMax) return false;
     }
 
     return true;
