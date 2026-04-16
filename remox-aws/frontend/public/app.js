@@ -27,8 +27,8 @@ async function fetchAllProperties(){
       data.raw.data.prop_data.forEach(r => {
         rawMap[r.propiedad_id] = {
           operacion: r.operacion,
-          // "propuesta": 0 = Propuesta, 1 = En proceso
-          propuesta: r.propuesta ?? null
+          // Solo guardar propuesta si el campo EXISTE en el objeto
+          propuesta: 'propuesta' in r ? r.propuesta : undefined
         };
       });
 
@@ -37,7 +37,8 @@ async function fetchAllProperties(){
         return {
           ...p,
           operacion: p.operacion || raw.operacion || '1',
-          propuesta: raw.propuesta ?? null
+          // Si raw tiene el campo propuesta, usarlo; si no, mantener el de p; si ninguno, undefined
+          propuesta: 'propuesta' in raw ? raw.propuesta : p.propuesta
         };
       });
     }
