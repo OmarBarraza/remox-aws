@@ -208,6 +208,27 @@
       transition: 0.2s;
     }
     .credito-popup-btn:hover { background: #E11B22; }
+
+    /* Badges propuesta / proceso — lado derecho */
+    .status-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: white;
+      z-index: 2;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-propuesta { background: #d97706; }
+    .status-proceso   { background: #ea580c; }
+
+    /* Footer siempre abajo */
+    html, body { min-height: 100vh; display: flex; flex-direction: column; }
+    .footer { margin-top: auto !important; }
   </style>
 </head>
 <body>
@@ -295,18 +316,7 @@
 <!-- TESTIMONIOS -->
 <section class="testimonios">
   <h2 class="section-title">Opiniones de clientes</h2>
-  <div class="carousel">
-    <div class="group">
-      <div class="card"><strong>Carlos M.</strong><br>⭐⭐⭐⭐⭐<br>Excelente atención y muy buen servicio.</div>
-      <div class="card"><strong>María G.</strong><br>⭐⭐⭐⭐<br>Muy buena experiencia, todo fue claro.</div>
-      <div class="card"><strong>Luis R.</strong><br>⭐⭐⭐⭐⭐<br>Recomendado al 100%.</div>
-    </div>
-    <div class="group" aria-hidden="true">
-      <div class="card"><strong>Carlos M.</strong><br>⭐⭐⭐⭐⭐<br>Excelente atención y muy buen servicio.</div>
-      <div class="card"><strong>María G.</strong><br>⭐⭐⭐⭐<br>Muy buena experiencia, todo fue claro.</div>
-      <div class="card"><strong>Luis R.</strong><br>⭐⭐⭐⭐⭐<br>Recomendado al 100%.</div>
-    </div>
-  </div>
+  <div class="elfsight-app-cae5a441-4ed8-4996-96be-d7b9559accd7" data-elfsight-app-lazy></div>
 </section>
 
 <!-- MAPA OFICINA (reemplaza formulario de contacto) -->
@@ -385,6 +395,7 @@
 </div>
 
 <script src="app.js"></script>
+<script src="https://elfsightcdn.com/platform.js" async></script>
 <script>
   /* ===== FILTROS DE CRÉDITO (botones hero) ===== */
   const creditoFiltros = {
@@ -399,25 +410,10 @@
     infonavit: { nombre: 'INFONAVIT',          msg: 'Se muestran propiedades en venta disponibles para adquirir con crédito INFONAVIT (hasta $2,000,000 MXN).' },
   };
 
-  let _creditoTipoActual = null;
-
   function filtrarCredito(tipo) {
-    _creditoTipoActual = tipo;
-    const label = creditoLabels[tipo];
-    document.getElementById('popup-tipo').textContent    = label.nombre;
-    document.getElementById('popup-titulo').textContent  = 'Mostrando propiedades disponibles';
-    document.getElementById('popup-msg').textContent     = label.msg;
-    document.getElementById('creditoPopup').classList.add('active');
-  }
-
-  function cerrarCreditoPopup() {
-    document.getElementById('creditoPopup').classList.remove('active');
-    if (_creditoTipoActual) {
-      const f = creditoFiltros[_creditoTipoActual];
-      document.getElementById('operacion').value = '1';
-      applyFilters(f.precioMax);
-      document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
-    }
+    const f = creditoFiltros[tipo];
+    // Redirige a propiedades.html con filtros en la URL
+    window.location.href = `propiedades.html?credito=${tipo}&maxPrecio=${f.precioMax}&operacion=1`;
   }
 
   /* ===== HELPERS COMPARTIDOS ===== */
@@ -426,6 +422,19 @@
   function buildCard(p) {
     const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
     const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
+
+    // Badge propuesta/proceso: campo "propuesta" del endpoint
+    // 0 = Propuesta (amarillo), 1 = En proceso (naranja), null/undefined = sin badge
+    let statusBadge = '';
+    const propuesta = p.propuesta ?? p.raw_propuesta ?? null;
+    if (propuesta !== null && propuesta !== undefined && propuesta !== '') {
+      if (String(propuesta) === '0') {
+        statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
+      } else if (String(propuesta) === '1') {
+        statusBadge = '<span class="status-badge status-proceso">En proceso</span>';
+      }
+    }
+
     return `
     <div class="property-card" onclick='selectProperty(${JSON.stringify(p)})'>
       <div class="property-image-wrap">
@@ -433,6 +442,7 @@
              onerror="this.src='${FALLBACK_IMG}'">
         <div class="remax-badge">RE/MAX</div>
         <span class="op-badge ${opClass}">${opLabel}</span>
+        ${statusBadge}
       </div>
       <div class="property-body">
         <div class="property-title">${p.titulo || 'Propiedad'}</div>
