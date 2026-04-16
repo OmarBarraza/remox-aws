@@ -412,9 +412,10 @@
 
   function filtrarCredito(tipo) {
     const f = creditoFiltros[tipo];
-    // Redirige a propiedades.html con filtros en la URL
     window.location.href = `propiedades.html?credito=${tipo}&maxPrecio=${f.precioMax}&operacion=1`;
   }
+  window.filtrarCredito = filtrarCredito;
+  window.cerrarCreditoPopup = cerrarCreditoPopup;
 
   /* ===== HELPERS COMPARTIDOS ===== */
   const FALLBACK_IMG = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
