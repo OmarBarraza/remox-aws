@@ -223,6 +223,96 @@
       margin-top: auto !important;
     }
 
+
+    /* ===== FILTROS AVANZADOS PANEL ===== */
+    .btn-mas-filtros {
+      padding: 10px 18px;
+      background: white;
+      color: #1f4e79;
+      border: 1.5px solid #1f4e79;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-mas-filtros:hover { background: #1f4e79; color: white; }
+    .btn-mas-filtros.active { background: #1f4e79; color: white; }
+
+    .filtros-extra {
+      display: none;
+      max-width: 1200px;
+      margin: 16px auto 0;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 24px;
+      gap: 24px;
+    }
+    .filtros-extra.open { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+    .filtro-extra-grupo { display: flex; flex-direction: column; gap: 8px; }
+    .filtro-extra-grupo > label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #7a8fa6;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Botones de selección tipo chip */
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      padding: 6px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 20px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #4a5568;
+      background: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .chip:hover { border-color: #1f4e79; color: #1f4e79; }
+    .chip.selected { background: #1f4e79; color: white; border-color: #1f4e79; }
+
+    /* Inputs Desde/Hasta */
+    .desde-hasta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .desde-hasta input {
+      padding: 9px 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      color: #2d3748;
+      outline: none;
+      background: white;
+      transition: border-color 0.2s;
+    }
+    .desde-hasta input:focus { border-color: #1f4e79; }
+    .desde-hasta input::placeholder { color: #a0aec0; font-size: 0.82rem; }
+
+    .filtro-extra-sublabel {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #a0aec0;
+      margin-bottom: 2px;
+    }
+
+    @media(max-width: 768px) {
+      .filtros-extra.open { grid-template-columns: 1fr; }
+    }
+
     /* Badges propuesta / proceso */
     .status-badge {
       position: absolute;
@@ -311,8 +401,71 @@
       </select>
     </div>
 
+    <button class="btn-mas-filtros" id="btn-mas-filtros" onclick="toggleFiltrosExtra()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+      Más filtros
+    </button>
     <button class="btn-buscar" onclick="buscar()">Buscar</button>
     <button class="btn-limpiar" onclick="limpiar()">Limpiar</button>
+
+  </div>
+
+  <!-- PANEL FILTROS EXTRA -->
+  <div class="filtros-extra" id="filtros-extra">
+
+    <!-- CUARTOS -->
+    <div class="filtro-extra-grupo">
+      <label>Cuartos</label>
+      <div class="chip-row" id="chips-cuartos">
+        <button class="chip" data-val="1" onclick="selectChip(this,'chips-cuartos','f-cuartos')">1</button>
+        <button class="chip" data-val="2" onclick="selectChip(this,'chips-cuartos','f-cuartos')">2</button>
+        <button class="chip" data-val="3" onclick="selectChip(this,'chips-cuartos','f-cuartos')">3</button>
+        <button class="chip" data-val="4" onclick="selectChip(this,'chips-cuartos','f-cuartos')">4</button>
+        <button class="chip" data-val="5" onclick="selectChip(this,'chips-cuartos','f-cuartos')">5+</button>
+      </div>
+      <input type="hidden" id="f-cuartos" value="">
+    </div>
+
+    <!-- BAÑOS -->
+    <div class="filtro-extra-grupo">
+      <label>Baños</label>
+      <div class="chip-row" id="chips-banos">
+        <button class="chip" data-val="1"   onclick="selectChip(this,'chips-banos','f-banos')">1</button>
+        <button class="chip" data-val="1.5" onclick="selectChip(this,'chips-banos','f-banos')">1.5</button>
+        <button class="chip" data-val="2"   onclick="selectChip(this,'chips-banos','f-banos')">2</button>
+        <button class="chip" data-val="2.5" onclick="selectChip(this,'chips-banos','f-banos')">2.5</button>
+        <button class="chip" data-val="3"   onclick="selectChip(this,'chips-banos','f-banos')">3</button>
+        <button class="chip" data-val="4"   onclick="selectChip(this,'chips-banos','f-banos')">4+</button>
+      </div>
+      <input type="hidden" id="f-banos" value="">
+    </div>
+
+    <!-- ESTACIONAMIENTOS -->
+    <div class="filtro-extra-grupo">
+      <label>Estacionamientos</label>
+      <div class="chip-row" id="chips-est">
+        <button class="chip" data-val="1" onclick="selectChip(this,'chips-est','f-estacionamientos')">1</button>
+        <button class="chip" data-val="2" onclick="selectChip(this,'chips-est','f-estacionamientos')">2</button>
+        <button class="chip" data-val="3" onclick="selectChip(this,'chips-est','f-estacionamientos')">3</button>
+        <button class="chip" data-val="4" onclick="selectChip(this,'chips-est','f-estacionamientos')">4+</button>
+      </div>
+      <input type="hidden" id="f-estacionamientos" value="">
+    </div>
+
+    <!-- TAMAÑO -->
+    <div class="filtro-extra-grupo">
+      <label>Tamaño</label>
+      <div class="filtro-extra-sublabel">Terreno (m²)</div>
+      <div class="desde-hasta">
+        <input type="number" id="f-terreno-min" placeholder="Desde">
+        <input type="number" id="f-terreno-max" placeholder="Hasta">
+      </div>
+      <div class="filtro-extra-sublabel" style="margin-top:10px;">Construcción (m²)</div>
+      <div class="desde-hasta">
+        <input type="number" id="f-const-min" placeholder="Desde">
+        <input type="number" id="f-const-max" placeholder="Hasta">
+      </div>
+    </div>
 
   </div>
 </div>
@@ -444,10 +597,17 @@ function goPage(n) {
 
 /* ===== FILTRAR ===== */
 function buscar() {
-  const ubicacion = (document.getElementById('f-ubicacion').value || '').toLowerCase();
-  const precio    = document.getElementById('f-precio').value;
-  const tipo      = document.getElementById('f-tipo').value;
-  const operacion = document.getElementById('f-operacion').value;
+  const ubicacion    = (document.getElementById('f-ubicacion').value || '').toLowerCase();
+  const precio       = document.getElementById('f-precio').value;
+  const tipo         = document.getElementById('f-tipo').value;
+  const operacion    = document.getElementById('f-operacion').value;
+  const cuartos      = document.getElementById('f-cuartos').value;
+  const banos        = document.getElementById('f-banos').value;
+  const estac        = document.getElementById('f-estacionamientos').value;
+  const terrenoMin   = Number(document.getElementById('f-terreno-min').value) || 0;
+  const terrenoMax   = Number(document.getElementById('f-terreno-max').value) || Infinity;
+  const constMin     = Number(document.getElementById('f-const-min').value)   || 0;
+  const constMax     = Number(document.getElementById('f-const-max').value)   || Infinity;
 
   filtered = allProps.filter(p => {
     if (ubicacion && !(p.ubicacion||'').toLowerCase().includes(ubicacion)) return false;
@@ -463,6 +623,39 @@ function buscar() {
     if (tipo && !(p.tipo||'').toLowerCase().includes(tipo)) return false;
     if (operacion && String(p.operacion) !== operacion)      return false;
 
+    // Cuartos (5+ = 5 o más)
+    if (cuartos) {
+      const c = Number(p.cuartos || p.recamaras || 0);
+      if (cuartos === '5') { if (c < 5) return false; }
+      else if (c !== Number(cuartos)) return false;
+    }
+
+    // Baños (4+ = 4 o más)
+    if (banos) {
+      const b = Number(p.banos || 0);
+      if (banos === '4') { if (b < 4) return false; }
+      else if (b !== Number(banos)) return false;
+    }
+
+    // Estacionamientos (4+ = 4 o más)
+    if (estac) {
+      const e = Number(p.estacionamientos || p.numero_estacionamientos || 0);
+      if (estac === '4') { if (e < 4) return false; }
+      else if (e !== Number(estac)) return false;
+    }
+
+    // Terreno
+    if (terrenoMin > 0 || terrenoMax < Infinity) {
+      const t = Number(p.m2_terreno || 0);
+      if (t < terrenoMin || t > terrenoMax) return false;
+    }
+
+    // Construcción
+    if (constMin > 0 || constMax < Infinity) {
+      const c = Number(p.m2_construccion || 0);
+      if (c < constMin || c > constMax) return false;
+    }
+
     return true;
   });
 
@@ -471,13 +664,41 @@ function buscar() {
 }
 
 function limpiar() {
-  document.getElementById('f-ubicacion').value  = '';
-  document.getElementById('f-precio').value     = '';
-  document.getElementById('f-tipo').value       = '';
-  document.getElementById('f-operacion').value  = '';
+  document.getElementById('f-ubicacion').value       = '';
+  document.getElementById('f-precio').value          = '';
+  document.getElementById('f-tipo').value            = '';
+  document.getElementById('f-operacion').value       = '';
+  document.getElementById('f-cuartos').value         = '';
+  document.getElementById('f-banos').value           = '';
+  document.getElementById('f-estacionamientos').value= '';
+  document.getElementById('f-terreno-min').value     = '';
+  document.getElementById('f-terreno-max').value     = '';
+  document.getElementById('f-const-min').value       = '';
+  document.getElementById('f-const-max').value       = '';
+  // Limpiar chips
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
   filtered    = [...allProps];
   currentPage = 1;
   renderPage();
+}
+
+function toggleFiltrosExtra() {
+  const panel = document.getElementById('filtros-extra');
+  const btn   = document.getElementById('btn-mas-filtros');
+  panel.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function selectChip(el, groupId, hiddenId) {
+  // Toggle: si ya estaba seleccionado, deseleccionar
+  const wasSelected = el.classList.contains('selected');
+  document.querySelectorAll(`#${groupId} .chip`).forEach(c => c.classList.remove('selected'));
+  if (!wasSelected) {
+    el.classList.add('selected');
+    document.getElementById(hiddenId).value = el.dataset.val;
+  } else {
+    document.getElementById(hiddenId).value = '';
+  }
 }
 
 /* ===== FETCH ===== */
