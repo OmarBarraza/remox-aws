@@ -202,6 +202,36 @@
       .dropdown p { color: #1f4e79 !important; }
       .menu-item.open .dropdown { display: block; }
     }
+  
+    /* Footer siempre abajo */
+    html, body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    body > *:not(footer):not(nav):not(script) {
+      flex-shrink: 0;
+    }
+    .footer {
+      margin-top: auto !important;
+    }
+
+    /* Badges propuesta / proceso */
+    .status-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: white;
+      z-index: 2;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-propuesta { background: #d97706; }
+    .status-proceso   { background: #ea580c; }
   </style>
 </head>
 <body>
@@ -448,27 +478,42 @@ async function init() {
 
     if (data.raw?.data?.prop_data) {
       const rawMap = {};
-      data.raw.data.prop_data.forEach(r => { rawMap[r.propiedad_id] = r.operacion; });
-      props = props.map(p => ({
-        ...p,
-        operacion: p.operacion || rawMap[p.propiedad_id] || rawMap[p.id] || '1'
-      }));
+      data.raw.data.prop_data.forEach(r => {
+        rawMap[r.propiedad_id] = { operacion: r.operacion, propuesta: r.propuesta ?? null };
+      });
+      props = props.map(p => {
+        const raw = rawMap[p.propiedad_id] || rawMap[p.id] || {};
+        return { ...p, operacion: p.operacion || raw.operacion || '1', propuesta: raw.propuesta ?? null };
+      });
     }
 
     allProps = props;
     filtered = [...allProps];
 
-    // Si viene con filtro de precio desde la URL (botones de crédito del index)
-    const params = new URLSearchParams(window.location.search);
-    const maxP   = params.get('maxPrecio');
-    const op     = params.get('operacion');
+    // Leer parámetros de URL (vienen de botones crédito del index)
+    const params  = new URLSearchParams(window.location.search);
+    const credito = params.get('credito');   // bancario | fovissste | infonavit
+    const maxP    = params.get('maxPrecio');
+    const op      = params.get('operacion');
+
+    // Mapeo de crédito a rango de precio para el select
+    const creditoToSelect = { bancario: '3+', fovissste: '2-3', infonavit: '1-2' };
+
+    if (credito && creditoToSelect[credito]) {
+      document.getElementById('f-precio').value = creditoToSelect[credito];
+    }
     if (maxP) {
-      document.getElementById('f-precio').value = maxP;
       filtered = filtered.filter(p => Number(p.precio||0) <= Number(maxP));
     }
     if (op) {
       document.getElementById('f-operacion').value = op;
       filtered = filtered.filter(p => String(p.operacion) === op);
+    }
+    // Mostrar título según crédito
+    if (credito) {
+      const nombres = { bancario:'Crédito Bancario', fovissste:'FOVISSSTE', infonavit:'INFONAVIT' };
+      const titleEl = document.querySelector('.results-count');
+      if (titleEl) titleEl.dataset.credito = nombres[credito] || '';
     }
 
     renderPage();
