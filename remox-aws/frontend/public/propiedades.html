@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="es"><!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -8,6 +9,12 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     .nav-logo .logo-img { height: 55px; }
+    /* Navbar siempre azul en esta vista */
+    .navbar { background: #0B2742 !important; }
+    /* Grid 3 columnas desktop */
+    .property-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    @media(max-width: 1024px){ .property-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+    @media(max-width: 600px){ .property-grid { grid-template-columns: 1fr !important; } }
 
     .property-image-wrap { position: relative; }
     .op-badge {
@@ -359,12 +366,18 @@ window.addEventListener('scroll', () =>
 function buildCard(p) {
   const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
   const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
+  let statusBadge = '';
+  if (p.propuesta !== null && p.propuesta !== undefined && p.propuesta !== '') {
+    if (String(p.propuesta) === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
+    else if (String(p.propuesta) === '1') statusBadge = '<span class="status-badge status-proceso">En proceso</span>';
+  }
   return `
   <div class="property-card" onclick='goToDetail(${JSON.stringify(p)})'>
     <div class="property-image-wrap">
       <img src="${p.imagen || FALLBACK}" class="property-image" onerror="this.src='${FALLBACK}'">
       <div class="remax-badge">RE/MAX</div>
       <span class="op-badge ${opClass}">${opLabel}</span>
+      ${statusBadge}
     </div>
     <div class="property-body">
       <div class="property-title">${p.titulo || 'Propiedad'}</div>
