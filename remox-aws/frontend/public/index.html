@@ -427,10 +427,7 @@
     let statusBadge = '';
     const _prop = String(p.propuesta ?? '');
     if (_prop === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
-    else if (_prop === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>'; else if (String(propuesta) === '1') {
-        statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
-      }
-    }
+    else if (_prop === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
 
     return `
     <div class="property-card" onclick='selectProperty(${JSON.stringify(p)})'>
