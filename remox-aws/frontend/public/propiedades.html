@@ -637,28 +637,28 @@ function buscar() {
     if (operacion && String(p.operacion) !== operacion) return false;
 
     // --- Cuartos ---
-    // Si se filtra por cuartos, la propiedad DEBE tener ese campo con valor
     if (cuartos) {
       const c = Number(p.cuartos || p.recamaras || 0);
-      if (!c) return false; // sin dato de cuartos → excluir
+      if (!c) return false;
+      // 5+ = 5 o más; resto = comparación >= para ser más flexible
       if (cuartos === '5') { if (c < 5) return false; }
-      else if (c !== Number(cuartos)) return false;
+      else if (c < Number(cuartos)) return false; // >= en lugar de ===
     }
 
     // --- Baños ---
     if (banos) {
       const b = Number(p.banos || 0);
-      if (!b) return false; // sin dato de baños → excluir
+      if (!b) return false;
       if (banos === '4') { if (b < 4) return false; }
-      else if (b !== Number(banos)) return false;
+      else if (b < Number(banos)) return false; // >= en lugar de ===
     }
 
     // --- Estacionamientos ---
     if (estac) {
       const e = Number(p.estacionamientos || p.numero_estacionamientos || 0);
-      if (!e) return false; // sin dato → excluir
+      if (!e) return false;
       if (estac === '4') { if (e < 4) return false; }
-      else if (e !== Number(estac)) return false;
+      else if (e < Number(estac)) return false; // >= en lugar de ===
     }
 
     // --- Terreno ---
