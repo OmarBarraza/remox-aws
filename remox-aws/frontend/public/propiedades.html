@@ -662,22 +662,12 @@ function buscar() {
       else if (Math.round(e) !== Number(estac)) return false;
     }
 
-    // --- Terreno ---
     if (filtrarTerreno) {
       const t = Number(p.m2_terreno || 0);
       if (!t) return false;
       if (t < terrenoMin || t > terrenoMax) return false;
-      // Solo terreno (sin construcción) → excluir propiedades con m2 construidos
-      // Considera vacío: null, undefined, '', '0', '0.00', 0
-      if (!filtrarConst) {
-        const mc = p.m2_construccion;
-        const mcNum = (mc === null || mc === undefined || mc === '' || mc === '0' || mc === '0.00' || Number(mc) === 0)
-          ? 0 : Number(mc);
-        if (mcNum > 0) return false;
-      }
     }
 
-    // --- Construcción ---
     if (filtrarConst) {
       const c = Number(p.m2_construccion || 0);
       if (!c) return false;
