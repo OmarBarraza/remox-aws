@@ -316,22 +316,28 @@
       .filtros-extra.open { grid-template-columns: 1fr; }
     }
 
-    /* Badges propuesta / proceso */
     .status-badge {
       position: absolute;
-      top: 10px;
-      right: 10px;
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 0.72rem;
       font-weight: 700;
-      color: white;
       z-index: 2;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .status-propuesta { background: #F5CF0B; color: #5a4000; }
-    .status-proceso   { background: #ea580c; }
+    .status-propuesta {
+      top: 10px;
+      right: 10px;
+      background: #F5CF0B;
+      color: #5a4000;
+    }
+    .status-proceso {
+      top: 42px;
+      right: 10px;
+      background: #ea580c;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -516,21 +522,18 @@ window.addEventListener('scroll', () =>
 function buildCard(p) {
   const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
   const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
-  let statusBadge = '';
-  if (p.propuesta === '1' || p.propuesta === 1) {
-    statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
-  }
-  if (p.venta_pendiente === '1' || p.venta_pendiente === 1) {
-    statusBadge += '<span class="status-badge status-proceso">En proceso de venta</span>';
-  }
-  // Cualquier otro valor (null, undefined, '', '2', etc.) → sin badge
+  const badgePropuesta      = (p.propuesta === '1'       || p.propuesta === 1)
+    ? '<span class="status-badge status-propuesta">Propuesta</span>' : '';
+  const badgeVentaPendiente = (p.venta_pendiente === '1' || p.venta_pendiente === 1)
+    ? '<span class="status-badge status-proceso">En proceso de venta</span>' : '';
   return `
   <div class="property-card" onclick='goToDetail(${JSON.stringify(p)})'>
     <div class="property-image-wrap">
       <img src="${p.imagen || FALLBACK}" class="property-image" onerror="this.src='${FALLBACK}'">
       <div class="remax-badge">RE/MAX</div>
       <span class="op-badge ${opClass}">${opLabel}</span>
-      ${statusBadge}
+      ${badgePropuesta}
+      ${badgeVentaPendiente}
     </div>
     <div class="property-body">
       <div class="property-title">${p.titulo || 'Propiedad'}</div>
