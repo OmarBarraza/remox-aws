@@ -137,77 +137,7 @@
       .menu-item.open .dropdown { display: block; }
     }
 
-    /* ===== POPUP CRÉDITO ===== */
-    .credito-popup {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(6px);
-      z-index: 99998;
-      justify-content: center;
-      align-items: center;
-    }
-    .credito-popup.active { display: flex; }
-    .credito-popup-card {
-      background: white;
-      border-radius: 20px;
-      padding: 36px 32px;
-      max-width: 420px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
-      animation: popupFade 0.3s ease;
-    }
-    @keyframes popupFade {
-      from { transform: translateY(30px) scale(0.95); opacity: 0; }
-      to   { transform: translateY(0) scale(1); opacity: 1; }
-    }
-    .credito-popup-icon {
-      width: 60px; height: 60px;
-      background: #1f4e79;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-      font-size: 1.6rem;
-    }
-    .credito-popup-card h3 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #1f4e79;
-      margin-bottom: 10px;
-    }
-    .credito-popup-card p {
-      font-size: 0.92rem;
-      color: #4a5568;
-      line-height: 1.6;
-      margin-bottom: 22px;
-    }
-    .credito-popup-card .popup-tipo {
-      display: inline-block;
-      background: #E11B22;
-      color: white;
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      text-transform: uppercase;
-    }
-    .credito-popup-btn {
-      width: 100%;
-      padding: 13px;
-      background: #1f4e79;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .credito-popup-btn:hover { background: #E11B22; }
+
 
     /* Badges propuesta / proceso — lado derecho */
     .status-badge {
@@ -260,11 +190,11 @@
 <section class="hero">
   <div class="hero-overlay">
     <div class="hero-content">
-      <h2>Encuentra tu propiedad ideal en Durango</h2>
+      <h2>¿Como podemos ayudarte hoy? deseas ...</h2>
       <div class="hero-buttons">
-        <button onclick="filtrarCredito('bancario')">Crédito Bancario</button>
-        <button onclick="filtrarCredito('fovissste')">FOVISSSTE</button>
-        <button onclick="filtrarCredito('infonavit')">INFONAVIT</button>
+        <button onclick="window.location.href='propiedades.html?operacion=1'">Comprar</button>
+        <button onclick="window.location.href='contacto.html'">Vender</button>
+        <button onclick="window.location.href='propiedades.html?operacion=2'">Rentar</button>
       </div>
     </div>
   </div>
@@ -378,51 +308,12 @@
 
 
 
-<!-- POPUP CRÉDITO -->
-<div class="credito-popup" id="creditoPopup">
-  <div class="credito-popup-card">
-    <div class="credito-popup-icon">🏠</div>
-    <span class="popup-tipo" id="popup-tipo">Crédito Bancario</span>
-    <h3 id="popup-titulo">Mostrando propiedades disponibles</h3>
-    <p id="popup-msg">Se están mostrando las propiedades en venta que pueden adquirirse con este tipo de crédito.</p>
-    <button class="credito-popup-btn" onclick="cerrarCreditoPopup()">Ver propiedades →</button>
-  </div>
-</div>
 
 <!-- Variables globales necesarias ANTES de app.js -->
 <script>
   const FALLBACK_IMG = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
 
-  const creditoFiltros = {
-    bancario:  { precioMax: 5000000 },
-    fovissste: { precioMax: 3000000 },
-    infonavit: { precioMax: 2000000 },
-  };
 
-  const creditoLabels = {
-    bancario:  { nombre: 'Crédito Bancario',  msg: 'Se muestran propiedades en venta disponibles para adquirir con Crédito Bancario (hasta $5,000,000 MXN).' },
-    fovissste: { nombre: 'FOVISSSTE',          msg: 'Se muestran propiedades en venta disponibles para adquirir con crédito FOVISSSTE (hasta $3,000,000 MXN).' },
-    infonavit: { nombre: 'INFONAVIT',          msg: 'Se muestran propiedades en venta disponibles para adquirir con crédito INFONAVIT (hasta $2,000,000 MXN).' },
-  };
-
-  let _creditoTipoActual = null;
-
-  function filtrarCredito(tipo) {
-    _creditoTipoActual = tipo;
-    const label = creditoLabels[tipo];
-    document.getElementById('popup-tipo').textContent    = label.nombre;
-    document.getElementById('popup-titulo').textContent  = 'Mostrando propiedades disponibles';
-    document.getElementById('popup-msg').textContent     = label.msg;
-    document.getElementById('creditoPopup').classList.add('active');
-  }
-
-  function cerrarCreditoPopup() {
-    document.getElementById('creditoPopup').classList.remove('active');
-    if (_creditoTipoActual) {
-      const f = creditoFiltros[_creditoTipoActual];
-      window.location.href = `propiedades.html?credito=${_creditoTipoActual}&maxPrecio=${f.precioMax}&operacion=1`;
-    }
-  }
 
   function buildCard(p) {
     const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
@@ -533,7 +424,6 @@
     });
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') cerrarCreditoPopup();
-  });
+    });
 </script>
 </body>
