@@ -376,6 +376,7 @@
       results.innerHTML = '<p style="padding:20px;color:#666;">No hay propiedades que coincidan.</p>';
       return;
     }
+    properties = properties.filter(p => p.propuesta === '0' || p.propuesta === 0);
     const primeras9 = properties.slice(0, 9);
     const hayMas    = properties.length > 9;
     results.innerHTML = `
