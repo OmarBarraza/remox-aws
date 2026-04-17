@@ -641,8 +641,7 @@ function buscar() {
     if (cuartos) {
       const c = Math.round(Number(p.cuartos || p.recamaras || 0));
       if (!c) return false;
-      if (cuartos === '5') { if (c < 5) return false; }
-      else if (c !== Number(cuartos)) return false;
+      if (c < Number(cuartos)) return false;
     }
 
     // --- Baños ---
@@ -650,16 +649,14 @@ function buscar() {
     if (banos) {
       const b = Number(p.banos || 0);
       if (!b) return false;
-      if (banos === '4') { if (b < 4) return false; }
-      else if (Math.abs(b - Number(banos)) > 0.01) return false;
+      if (b < Number(banos)) return false;
     }
 
     // --- Estacionamientos ---
     if (estac) {
       const e = Number(p.estacionamientos || p.numero_estacionamientos || 0);
       if (!e) return false;
-      if (estac === '4') { if (e < 4) return false; }
-      else if (Math.round(e) !== Number(estac)) return false;
+      if (Math.round(e) < Number(estac)) return false;
     }
 
     if (filtrarTerreno) {
