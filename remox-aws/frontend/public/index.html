@@ -137,22 +137,28 @@
       .menu-item.open .dropdown { display: block; }
     }
 
-    /* Badges propuesta / proceso — lado derecho */
     .status-badge {
       position: absolute;
-      top: 10px;
-      right: 10px;
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 0.72rem;
       font-weight: 700;
-      color: white;
       z-index: 2;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .status-propuesta { background: #F5CF0B; color: #5a4000; }
-    .status-proceso   { background: #ea580c; }
+    .status-propuesta {
+      top: 10px;
+      right: 10px;
+      background: #F5CF0B;
+      color: #5a4000;
+    }
+    .status-proceso {
+      top: 42px;
+      right: 10px;
+      background: #ea580c;
+      color: white;
+    }
 
     /* Footer siempre abajo */
     html, body { min-height: 100vh; display: flex; flex-direction: column; }
@@ -309,13 +315,10 @@
   function buildCard(p) {
     const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
     const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
-    let statusBadge = '';
-    if (p.propuesta === '1' || p.propuesta === 1) {
-      statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
-    }
-    if (p.venta_pendiente === '1' || p.venta_pendiente === 1) {
-      statusBadge += '<span class="status-badge status-proceso">En proceso de venta</span>';
-    }
+    const badgePropuesta     = (p.propuesta === '1'       || p.propuesta === 1)
+      ? '<span class="status-badge status-propuesta">Propuesta</span>' : '';
+    const badgeVentaPendiente = (p.venta_pendiente === '1' || p.venta_pendiente === 1)
+      ? '<span class="status-badge status-proceso">En proceso de venta</span>' : '';
     return `
     <div class="property-card" onclick='selectProperty(${JSON.stringify(p)})'>
       <div class="property-image-wrap">
@@ -323,7 +326,8 @@
              onerror="this.src='${FALLBACK_IMG}'">
         <div class="remax-badge">RE/MAX</div>
         <span class="op-badge ${opClass}">${opLabel}</span>
-        ${statusBadge}
+        ${badgePropuesta}
+        ${badgeVentaPendiente}
       </div>
       <div class="property-body">
         <div class="property-title">${p.titulo || 'Propiedad'}</div>
@@ -356,7 +360,12 @@
     const price     = document.getElementById('priceRange')?.value || '';
     const category  = document.getElementById('category')?.value || '';
     const operacion = document.getElementById('operacion')?.value || '';
-    if (location)  filtered = filtered.filter(p => (p.ubicacion||'').toLowerCase().includes(location));
+    if (location) {
+      filtered = filtered.filter(p => {
+        const haystack = [p.titulo, p.ubicacion, p.tipo, p.clave].filter(Boolean).join(' ').toLowerCase();
+        return location.trim().split(/\s+/).every(word => haystack.includes(word));
+      });
+    }
     if (maxPrecioOverride) {
       filtered = filtered.filter(p => p.precio <= maxPrecioOverride);
     } else if (price) {
