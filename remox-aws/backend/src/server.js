@@ -76,19 +76,22 @@ app.get("/api/propiedades", async (req, res) => {
         ? `https://cdn.remax.com.mx/${imagePath}`
         : "https://cdn.remax.com.mx/properties/default_rebrand.jpg";
       return {
-        id: item.propiedad_id,
-        propiedad_id: item.propiedad_id,
-        clave: item.clave,
-        titulo: `${item.tipo_nombre || "Propiedad"} en ${item.colonia_nombre || item.ciudad_nombre || "N/D"}`,
-        ubicacion: `${item.colonia_nombre || "N/D"}, ${item.ciudad_nombre || "N/D"}, ${item.estado_nombre || "N/D"}`,
-        precio: Number(item.mxn_corriente || 0),
-        moneda: item.moneda || "MXN",
-        operacion: item.operacion,
-        tipo: String(item.tipo_nombre || "").toLowerCase(),
-        imagen: imageUrl,
-        cuartos: item.cuartos,
-        banos: item.banos,
-        m2_terreno: item.m2_terreno,
+        id             : item.propiedad_id,
+        propiedad_id   : item.propiedad_id,
+        clave          : item.clave,
+        titulo         : `${item.tipo_nombre || "Propiedad"} en ${item.colonia_nombre || item.ciudad_nombre || "N/D"}`,
+        ubicacion      : [item.colonia_nombre, item.ciudad_nombre, item.estado_nombre].filter(Boolean).join(", "),
+        precio         : Number(item.mxn_corriente || 0),
+        moneda         : item.moneda || "MXN",
+        operacion      : item.operacion,
+        propuesta      : item.propuesta ?? null,
+        tipo           : String(item.tipo_nombre || "").toLowerCase(),
+        imagen         : imageUrl,
+        cuartos        : item.cuartos        || null,
+        banos          : item.banos          || null,
+        m2_terreno     : item.m2_terreno     || null,
+        m2_construccion: item.m2_construccion || null,
+        estacionamientos: item.numero_estacionamientos || null,
       };
     });
 
