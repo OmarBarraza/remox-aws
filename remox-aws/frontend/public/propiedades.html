@@ -518,7 +518,10 @@ function buildCard(p) {
   const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
   let statusBadge = '';
   if (p.propuesta === '1' || p.propuesta === 1) {
-    statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
+    statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
+  }
+  if (p.venta_pendiente === '1' || p.venta_pendiente === 1) {
+    statusBadge += '<span class="status-badge status-proceso">En proceso de venta</span>';
   }
   // Cualquier otro valor (null, undefined, '', '2', etc.) → sin badge
   return `
