@@ -137,8 +137,6 @@
       .menu-item.open .dropdown { display: block; }
     }
 
-
-
     /* Badges propuesta / proceso — lado derecho */
     .status-badge {
       position: absolute;
@@ -305,23 +303,16 @@
   <p class="footer-copy">Remax Victoria. Todos los derechos reservados ©</p>
 </footer>
 
-
-
-
-
-<!-- Variables globales necesarias ANTES de app.js -->
 <script>
   const FALLBACK_IMG = 'https://cdn.remax.com.mx/properties/default_rebrand.jpg';
-
-
 
   function buildCard(p) {
     const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
     const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
-    const _prop = String(p.propuesta ?? '');
     let statusBadge = '';
-    if (_prop === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
-    else if (_prop === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
+    if (p.propuesta === '1' || p.propuesta === 1) {
+      statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
+    }
     return `
     <div class="property-card" onclick='selectProperty(${JSON.stringify(p)})'>
       <div class="property-image-wrap">
