@@ -517,9 +517,12 @@ function buildCard(p) {
   const opLabel = String(p.operacion) === '2' ? 'En renta' : 'En venta';
   const opClass = String(p.operacion) === '2' ? 'op-renta' : 'op-venta';
   let statusBadge = '';
-  const _prop = String(p.propuesta ?? '');
-  if (_prop === '0') statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
-  else if (_prop === '1') statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
+  const _prop = p.propuesta;
+  if (_prop === '0' || _prop === 0) {
+    statusBadge = '<span class="status-badge status-propuesta">Propuesta</span>';
+  } else if (_prop === '1' || _prop === 1) {
+    statusBadge = '<span class="status-badge status-proceso">En proceso de venta</span>';
+  }
   // Cualquier otro valor (null, undefined, '', '2', etc.) → sin badge
   return `
   <div class="property-card" onclick='goToDetail(${JSON.stringify(p)})'>
